@@ -1,0 +1,15 @@
+{
+  "UniqueName": "havmir.RikaMod",
+  "Version": "0.2.0",
+  "Author": "Havmir",
+  "Description": "A mod demonstrating the basics of modding Cobalt Core.",
+  "RequiredApiVersion": "1.5.7",
+  "EntryPointAssembly": "RikaMod.dll",
+  "LoadPhase": "AfterDbInit",
+  "Dependencies": [
+    {
+      "UniqueName": "Shockah.Kokoro",
+      "Version": "1.12.1"
+    }
+  ]
+}
