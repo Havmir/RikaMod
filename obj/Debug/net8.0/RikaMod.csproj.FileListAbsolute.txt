@@ -1,0 +1,9 @@
+C:\Users\Ike\Downloads\Rika-Source\RikaMod\bin\Debug\net8.0\RikaMod.dll.config
+C:\Users\Ike\Downloads\Rika-Source\RikaMod\bin\Debug\net8.0\RikaMod.deps.json
+C:\Users\Ike\Downloads\Rika-Source\RikaMod\bin\Debug\net8.0\RikaMod.dll
+C:\Users\Ike\Downloads\Rika-Source\RikaMod\obj\Debug\net8.0\RikaMod.csproj.AssemblyReference.cache
+C:\Users\Ike\Downloads\Rika-Source\RikaMod\obj\Debug\net8.0\RikaMod.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ike\Downloads\Rika-Source\RikaMod\obj\Debug\net8.0\RikaMod.AssemblyInfoInputs.cache
+C:\Users\Ike\Downloads\Rika-Source\RikaMod\obj\Debug\net8.0\RikaMod.AssemblyInfo.cs
+C:\Users\Ike\Downloads\Rika-Source\RikaMod\obj\Debug\net8.0\RikaMod.csproj.CoreCompileInputs.cache
+C:\Users\Ike\Downloads\Rika-Source\RikaMod\obj\Debug\net8.0\RikaMod.dll

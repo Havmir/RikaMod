@@ -1,0 +1,74 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Ike\\Downloads\\Rika-Source\\RikaMod\\RikaMod.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Ike\\Downloads\\Rika-Source\\RikaMod\\RikaMod.csproj": {
+      "version": "0.2.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Ike\\Downloads\\Rika-Source\\RikaMod\\RikaMod.csproj",
+        "projectName": "RikaMod",
+        "projectPath": "C:\\Users\\Ike\\Downloads\\Rika-Source\\RikaMod\\RikaMod.csproj",
+        "packagesPath": "C:\\Users\\Ike\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Ike\\Downloads\\Rika-Source\\RikaMod\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Ike\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "EnumByNameSourceGenerator": {
+              "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.1.2, )"
+            },
+            "Nickel.ModBuildConfig": {
+              "target": "Package",
+              "version": "[2.0.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Users\\Ike\\.dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

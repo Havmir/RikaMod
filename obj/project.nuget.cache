@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "yQpLQARNF4g=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Ike\\Downloads\\Rika-Source\\RikaMod\\RikaMod.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Ike\\.nuget\\packages\\enumbynamesourcegenerator\\1.1.2\\enumbynamesourcegenerator.1.1.2.nupkg.sha512",
+    "C:\\Users\\Ike\\.nuget\\packages\\fayti1703.assemblytasks\\1.1.0\\fayti1703.assemblytasks.1.1.0.nupkg.sha512",
+    "C:\\Users\\Ike\\.nuget\\packages\\nanoray.extractsinglefileapplicationresourcetask\\1.0.0\\nanoray.extractsinglefileapplicationresourcetask.1.0.0.nupkg.sha512",
+    "C:\\Users\\Ike\\.nuget\\packages\\nickel.modbuildconfig\\2.0.2\\nickel.modbuildconfig.2.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}
