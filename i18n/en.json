@@ -1,0 +1,120 @@
+﻿{
+    "character": {
+        "name": "Rika",
+        "desc": "Rika is very trigger happy and doesn't have the most patiance, so they'll be using their card effects once they're drawn."
+    },
+    "status": {
+        "RikaFlux": {
+            "name": "Shield Flow",
+            "desc": "Gain <c=keyword>{0}</c> <c=status>shield</c> when you attack. <c=downside>Lose this at the end of your turn.</c>"
+        }
+    },
+    "action": {
+    },
+    "card": {
+        "SpareShot": {
+            "name": "Spare Shot"
+        },
+        "ShieldCurrent": {
+            "name": "Shield Current"
+        },
+        "QuickDodge": {
+            "name": "Quick Dodge"
+        },
+        "QuickShift": {
+            "name": "Quick Shift"
+        },
+        "QuickBlock": {
+            "name": "Quick Block"
+        },
+        "CardSwap": {
+            "name": "Card Swap"
+        },
+        "PowerBoost": {
+            "name": "Power Boost"
+        },
+        "EnergyInvestment": {
+            "name": "Energy Investment"
+        },
+        "CardInvestment": {
+            "name": "Card Investment"
+        },
+        "BarrelRoll": {
+            "name": "Barrel Roll"
+        },
+        "CorrosionShot": {
+            "name": "Corrosion Shot"
+        },
+        "BorrowCards": {
+            "name": "Borrow Cards"
+        },
+        "ParallelStasis": {
+            "name": "Parallel Stasis"
+        },
+        "CardToEnergy": {
+            "name": "Card To Energy"
+        },
+        "WhaWhy": {
+            "name": "Wha ... Why?"
+        },
+        "Haste": {
+            "name": "Haste"
+        },
+        "PowerGain": {
+            "name": "Power Gain"
+        },
+        "ReplaceHand": {
+            "name": "Replace Hand"
+        },
+        "RapidAttack": {
+            "name": "Rapid Attack"
+        },
+        "StatusInvestment": {
+            "name": "Status Investment"
+        },
+        "TradeBlows": {
+            "name": "Trade Blows"
+        },
+        "PeircingShots": {
+            "name": "Piercing Shots"
+        },
+        "Blitz": {
+            "name": "Blitz"
+        },
+        "RollAway": {
+            "name": "Roll Away"
+        },
+        "Tailwind": {
+            "name": "Tailwind"
+        },
+        "ColorlessRikaSummon": {
+            "name": "Rika.EXE"
+        }
+    },
+    "artifact": {
+        "SpicyBoost": {
+            "name": "SPICY BOOST",
+            "desc": "When you lose hull, gain <c=status>BOOST</c> equal to the amount of hull you lost."
+        },
+        "CardRotate": {
+            "name": "CARD ROTATE",
+            "desc": "At the start of your turn, discard 2 cards then draw 2 cards."
+        },
+        "RandomUSB": {
+            "name": "SKETCHY USB",
+            "desc": "A random USB that will add a non-temp <c=card>Safety Override</c> & gives you the oppurtunity to add one of 5 <c=f00707>Rika</c> cards to your deck."
+        },
+        "SpareStatus": {
+            "name": "SPARE STATUS",
+            "desc": "At the start of each turn, gain 1 random positive or neutral <c=status>status</c> condition."
+        },
+        "MoralBoost": {
+            "name": "MAGIC RAINBOW CARDSLEEVES",
+            "desc": "Gain 1 <c=status>BOOST</c> at the start of each of your turns."
+        },
+        "BoostedDeck": {
+            "name" : "BOOSTED DECK",
+            "desc" : "Gain 1 <c=status>BOOST</c> whenever you shuffle your deck."
+        }
+    }
+}
