@@ -10,6 +10,10 @@ public class ArtManager
     // This controls the artTint for the default artmode
     // Use 71b9f3 for a sky color
     private static string _hexcodeDefault = "71b9f3";
+
+    // I am mostly using this to control Console.WriteLine happening or not.
+    // Set to true if you want things in the console--set to false if you do not.
+    private static bool _isplaytester = false;
     
     public static int ArtNumber
     {
@@ -22,5 +26,10 @@ public class ArtManager
         get { return _hexcodeDefault; }
         set { _hexcodeDefault = value; }
     }
-    
+
+    public static bool IsPlayTester
+    {
+        get { return _isplaytester; }
+        set { _isplaytester = value; }
+    }
 }

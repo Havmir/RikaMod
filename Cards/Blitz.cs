@@ -54,6 +54,8 @@ public class Blitz : Card, IRegisterable
         };
     }
     
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
@@ -79,12 +81,12 @@ public class Blitz : Card, IRegisterable
                         damage = GetDmg(s, 0),
                         fast = true
                     });
-                    Console.WriteLine(
-                        $"[RikaMod] Attack({i}) | _rikaCardsDrawnThisTurn: {_rikaCardsDrawnThisTurn} | ModEntry Number: {ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0)} | Turn: {c.turn}");
+                    if (_isplaytester)
+                    {
+                        Console.WriteLine($"[RikaMod] Attack({i}) | _rikaCardsDrawnThisTurn: {_rikaCardsDrawnThisTurn} | ModEntry Number: {ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0)} | Turn: {c.turn}");
+                    }
                 }
             }
-            
-
             if (upgrade == Upgrade.A)
             {
                 for (int i = 1; i <= _rikaCardsDrawnThisTurn; i++)
@@ -94,10 +96,12 @@ public class Blitz : Card, IRegisterable
                         damage = GetDmg(s, 1),
                         fast = true
                     });
-                    Console.WriteLine($"Attack({i}) ~ _rikaCardsDrawnThisTurn: {_rikaCardsDrawnThisTurn}");
+                    if (_isplaytester)
+                    {
+                        Console.WriteLine($"[RikaMod] Attack({i}) | _rikaCardsDrawnThisTurn: {_rikaCardsDrawnThisTurn} | ModEntry Number: {ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0)} | Turn: {c.turn}");
+                    }
                 }
             }
-
             if (upgrade == Upgrade.B)
             {
                 c.Queue(new AEnergy
@@ -111,8 +115,10 @@ public class Blitz : Card, IRegisterable
                         damage = GetDmg(s, 2),
                         fast = true
                     });
-                    Console.WriteLine(
-                        $"Attack({i}) ~ _rikaCardsDrawnThisTurn: {_rikaCardsDrawnThisTurn} ~ Turn: {c.turn}");
+                    if (_isplaytester)
+                    {
+                        Console.WriteLine($"[RikaMod] Attack({i}) | _rikaCardsDrawnThisTurn: {_rikaCardsDrawnThisTurn} | ModEntry Number: {ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0)} | Turn: {c.turn}");
+                    }
                 }
             }
         }

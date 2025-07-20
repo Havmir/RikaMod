@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
+using RikaMod.Features;
 
 namespace RikaMod.Artifacts;
 
@@ -29,6 +31,8 @@ public class SpicyBoost : Artifact, IRegisterable
         return ModEntry.Instance.Helper.ModData.GetModDataOrDefault(combat, "hullLostNumber", 0);
     }
     
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    
     public override void OnPlayerLoseHull(State state, Combat combat, int amount)
     {
         Pulse();
@@ -38,6 +42,11 @@ public class SpicyBoost : Artifact, IRegisterable
         a.statusAmount = amount;
         a.targetPlayer = true;
         combat1.QueueImmediate(a);
+
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] SpicyBoost proc for {amount}");
+        }
     }
     
 }

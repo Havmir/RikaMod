@@ -25,7 +25,7 @@ internal class ModEntry : SimpleMod
     
     internal IPlayableCharacterEntryV2 Rikachar { get; }
     internal IStatusEntry Rikamissing { get; }
-    
+
     internal ICardTraitEntry RikasTrait { get; }
     
     private int _artmode = ArtManager.ArtNumber;
@@ -249,19 +249,10 @@ internal class ModEntry : SimpleMod
         }
 
         Rikamissing = Rikachar.MissingStatus;
-
-        /*
-         * Managers are typically made to register themselves when constructed.
-         * _ = makes the compiler not complain about the fact that you are constructing something for seemingly no reason.
-         */
+        
         _ = new HullLostManager();
         
         _ = new ArtManager();
-
-        /*
-         * Some classes require so little management that a manager may not be worth writing.
-         * In AGainPonder's case, it is simply a need for two sprites and evaluation of an artifact's effect.
-         */
     }
     
 

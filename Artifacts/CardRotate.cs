@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
+using RikaMod.Features;
 
 namespace RikaMod.Artifacts;
 
@@ -24,10 +26,10 @@ public class CardRotate : Artifact, IRegisterable
         });
     }
 
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    
     public override void OnTurnStart(State state, Combat combat)
     {
-        //Console.WriteLine("Card Roate");
-        
         Combat combat2 = combat;
         ADrawCard b = new ADrawCard();
         b.count = 2;
@@ -38,5 +40,10 @@ public class CardRotate : Artifact, IRegisterable
         a.count = 2;
         combat1.QueueImmediate(a);
         Pulse();
+
+        if (_isplaytester)
+        {
+            Console.Write("[RikaMod] Card Rotate Proc");
+        }
     }
 }

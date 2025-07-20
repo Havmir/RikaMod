@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Features;
@@ -24,8 +25,10 @@ public class SpareStatus : Artifact, IRegisterable
             Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifact/ThisIconIsACryForHelp.png")).Sprite
         });
     }
-
-
+    
+    // This is here to deal with tech debt ~ Havmir 19/07/2025
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private bool _consoleWriteLineOn = _isplaytester;
     
     public override void OnTurnStart(State state, Combat combat)
     {
@@ -33,7 +36,7 @@ public class SpareStatus : Artifact, IRegisterable
         
         int x = state.rngActions.NextInt();
         x = x % 1000;
-    
+        
         if (x >= 0 && x <= 150)
         {
             Combat combat1 = combat;
@@ -42,6 +45,10 @@ public class SpareStatus : Artifact, IRegisterable
             a.statusAmount = 1;
             a.targetPlayer = true;
             combat1.QueueImmediate(a);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, evade (15.1% chance).");
+            }
         }
         if (x >= 151 && x <= 200)
         {
@@ -51,6 +58,10 @@ public class SpareStatus : Artifact, IRegisterable
             b.statusAmount = 1;
             b.targetPlayer = true;
             combat2.QueueImmediate(b);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, droneshift (5% chance).");
+            }
         }
         if (x >= 201 && x <= 210)
         {
@@ -60,6 +71,10 @@ public class SpareStatus : Artifact, IRegisterable
             c.statusAmount = 1;
             c.targetPlayer = true;
             combat3.QueueImmediate(c);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, perfectShield (1% chance).");
+            }
         }
         if (x >= 211 && x <= 240)
         {
@@ -69,6 +84,10 @@ public class SpareStatus : Artifact, IRegisterable
             d.statusAmount = 1;
             d.targetPlayer = true;
             combat4.QueueImmediate(d);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, serenity (3% chance).");
+            }
         }
         if (x >= 241 && x <= 280)
         {
@@ -78,6 +97,10 @@ public class SpareStatus : Artifact, IRegisterable
             e.statusAmount = 1;
             e.targetPlayer = true;
             combat5.QueueImmediate(e);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, maxShield (4% chance).");
+            }
         }
         if (x >= 281 && x <= 310)
         {
@@ -87,6 +110,10 @@ public class SpareStatus : Artifact, IRegisterable
             f.statusAmount = 1;
             f.targetPlayer = true;
             combat6.QueueImmediate(f);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, shard (3% chance).");
+            }
         }
         if (x >= 311 && x <= 330)
         {
@@ -96,6 +123,10 @@ public class SpareStatus : Artifact, IRegisterable
             g.statusAmount = 1;
             g.targetPlayer = true;
             combat7.QueueImmediate(g);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, maxShard (2% chance).");
+            }
         }
         if (x == 331)
         {
@@ -105,6 +136,10 @@ public class SpareStatus : Artifact, IRegisterable
             h.statusAmount = 1;
             h.targetPlayer = true;
             combat8.QueueImmediate(h);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, mitosis (0.1% chance).");
+            }
         }
         if (x == 332)
         {
@@ -114,6 +149,10 @@ public class SpareStatus : Artifact, IRegisterable
             i.statusAmount = 1;
             i.targetPlayer = true;
             combat9.QueueImmediate(i);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, payback (0.1% chance).");
+            }
         }
         if (x >= 333 && x <= 336)
         {
@@ -123,6 +162,10 @@ public class SpareStatus : Artifact, IRegisterable
             j.statusAmount = 1;
             j.targetPlayer = true;
             combat10.QueueImmediate(j);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, temp payback (0.4% chance).");
+            }
         }
         if (x >= 337 && x <= 387)
         {
@@ -132,6 +175,10 @@ public class SpareStatus : Artifact, IRegisterable
             k.statusAmount = 1;
             k.targetPlayer = true;
             combat11.QueueImmediate(k);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, stunCharge (5% chance).");
+            }
         }
         if (x == 388)
         {
@@ -141,6 +188,10 @@ public class SpareStatus : Artifact, IRegisterable
             m.statusAmount = 1;
             m.targetPlayer = true;
             combat12.QueueImmediate(m);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, stunSource (0.1% chance).");
+            }
         }
         if (x == 389)
         {
@@ -150,6 +201,10 @@ public class SpareStatus : Artifact, IRegisterable
             n.statusAmount = 1;
             n.targetPlayer = true;
             combat13.QueueImmediate(n);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, ace (0.1% chance).");
+            }
         }
         if (x >= 390 && x <= 450)
         {
@@ -159,6 +214,10 @@ public class SpareStatus : Artifact, IRegisterable
             o.statusAmount = 1;
             o.targetPlayer = true;
             combat14.QueueImmediate(o);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, hermes (6.1% chance).");
+            }
         }
         if (x >= 451 && x <= 500)
         {
@@ -168,6 +227,10 @@ public class SpareStatus : Artifact, IRegisterable
             p.statusAmount = 1;
             p.targetPlayer = true;
             combat15.QueueImmediate(p);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, drawNextTurn (5% chance).");
+            }
         }
         if (x >= 501 && x <= 550)
         {
@@ -177,6 +240,10 @@ public class SpareStatus : Artifact, IRegisterable
             q.statusAmount = 1;
             q.targetPlayer = true;
             combat16.QueueImmediate(q);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, energyNextTurn (5% chance).");
+            }
         }
         if (x == 551)
         {
@@ -186,6 +253,10 @@ public class SpareStatus : Artifact, IRegisterable
             r.statusAmount = 1;
             r.targetPlayer = true;
             combat17.QueueImmediate(r);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, strafe (0.1% chance).");
+            }
         }
         if (x == 552)
         {
@@ -195,6 +266,10 @@ public class SpareStatus : Artifact, IRegisterable
             s.statusAmount = 1;
             s.targetPlayer = true;
             combat18.QueueImmediate(s);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, endlessMagazine (0.1% chance).");
+            }
         }
         if (x >= 553 && x <= 602)
         {
@@ -204,6 +279,10 @@ public class SpareStatus : Artifact, IRegisterable
             t.statusAmount = 1;
             t.targetPlayer = true;
             combat19.QueueImmediate(t);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, overdrive (4.9% chance).");
+            }
         }
         if (x >= 603 && x <= 613)
         {
@@ -213,6 +292,10 @@ public class SpareStatus : Artifact, IRegisterable
             u.statusAmount = 1;
             u.targetPlayer = true;
             combat21.QueueImmediate(u);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, powerdrive (1% chance).");
+            }
         }
         if (x >= 614 && x <= 619)
         {
@@ -222,6 +305,10 @@ public class SpareStatus : Artifact, IRegisterable
             v.statusAmount = 1;
             v.targetPlayer = true;
             combat22.QueueImmediate(v);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, tableFlip (0.6% chance).");
+            }
         }
         if (x >= 620 && x <= 670)
         {
@@ -231,6 +318,10 @@ public class SpareStatus : Artifact, IRegisterable
             w.statusAmount = 1;
             w.targetPlayer = true;
             combat23.QueueImmediate(w);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, bubbleJuice (5.1% chance).");
+            }
         }
         if (x == 671)
         {
@@ -240,6 +331,10 @@ public class SpareStatus : Artifact, IRegisterable
             y.statusAmount = 1;
             y.targetPlayer = true;
             combat24.QueueImmediate(y);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, rockFactory (0.1% chance).");
+            }
         }
         if (x >= 672 && x <= 711)
         {
@@ -249,6 +344,10 @@ public class SpareStatus : Artifact, IRegisterable
             z.statusAmount = 1;
             z.targetPlayer = true;
             combat25.QueueImmediate(z);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, autododgeRight (4% chance).");
+            }
         }
         if (x >= 712 && x <= 721)
         {
@@ -258,6 +357,10 @@ public class SpareStatus : Artifact, IRegisterable
             aa.statusAmount = 1;
             aa.targetPlayer = true;
             combat26.QueueImmediate(aa);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, autododgeLeft (1% chance).");
+            }
         }
         if (x >= 722 && x <= 771)
         {
@@ -267,6 +370,10 @@ public class SpareStatus : Artifact, IRegisterable
             ab.statusAmount = 1;
             ab.targetPlayer = true;
             combat27.QueueImmediate(ab);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, boost (5% chance).");
+            }
         }
         if (x >= 772 && x <= 871)
         {
@@ -276,6 +383,10 @@ public class SpareStatus : Artifact, IRegisterable
             ac.statusAmount = 1;
             ac.targetPlayer = true;
             combat28.QueueImmediate(ac);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, autopilot (10% chance).");
+            }
         }
         if (x == 872)
         {
@@ -285,6 +396,10 @@ public class SpareStatus : Artifact, IRegisterable
             ad.statusAmount = 1;
             ad.targetPlayer = true;
             combat29.QueueImmediate(ad);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, cleanExhaust (0.1% chance).");
+            }
         }
         if (x == 873)
         {
@@ -294,6 +409,10 @@ public class SpareStatus : Artifact, IRegisterable
             ae.statusAmount = 1;
             ae.targetPlayer = true;
             combat30.QueueImmediate(ae);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, quarry (0.1% chance).");
+            }
         }
         if (x >= 874 && x <= 924)
         {
@@ -303,6 +422,10 @@ public class SpareStatus : Artifact, IRegisterable
             af.statusAmount = 1;
             af.targetPlayer = true;
             combat31.QueueImmediate(af);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, flux (5.1% chance).");
+            }
         }
         if (x >= 925 && x <= 999)
         {
@@ -312,6 +435,10 @@ public class SpareStatus : Artifact, IRegisterable
             ag.statusAmount = 1;
             ag.targetPlayer = true;
             combat32.QueueImmediate(ag);
+            if (_consoleWriteLineOn)
+            {
+                Console.WriteLine($"[RikaMod] Spare Status rolled: {x}, shieldFlow (7.4% chance).");
+            }
         }
     }
 }

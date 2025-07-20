@@ -2,27 +2,46 @@
 using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
+using RikaMod.Features;
 
 namespace RikaMod.Artifacts;
 
 public class RandomUsb : Artifact, IRegisterable
 {
-    
+ 
+    private static int _artmode = ArtManager.ArtNumber;
     public static void Register(IPluginPackage<IModManifest> package, IModHelper helper)
     {
-        
-        helper.Content.Artifacts.RegisterArtifact(new ArtifactConfiguration
+        if (_artmode == 1)
         {
-            ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
-            Meta = new ArtifactMeta
+            helper.Content.Artifacts.RegisterArtifact(new ArtifactConfiguration
             {
-                pools = [ArtifactPool.Common],
-                owner = ModEntry.Instance.RikaDeck.Deck
-            },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "RandomUSB", "name"]).Localize,
-            Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "RandomUSB", "desc"]).Localize,
-            Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifact/BadUSBIcon.png")).Sprite
-        });
+                ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
+                Meta = new ArtifactMeta
+                {
+                    pools = [ArtifactPool.Common],
+                    owner = ModEntry.Instance.RikaDeck.Deck
+                },
+                Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "RandomUSB", "name"]).Localize,
+                Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "RandomUSB", "alphadesc"]).Localize,
+                Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifact/BadUSBIcon.png")).Sprite
+            });
+        }
+        else
+        {
+            helper.Content.Artifacts.RegisterArtifact(new ArtifactConfiguration
+            {
+                ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
+                Meta = new ArtifactMeta
+                {
+                    pools = [ArtifactPool.Common],
+                    owner = ModEntry.Instance.RikaDeck.Deck
+                },
+                Name = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "RandomUSB", "name"]).Localize,
+                Description = ModEntry.Instance.AnyLocalizations.Bind(["artifact", "RandomUSB", "desc"]).Localize,
+                Sprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Artifact/BadUSBIcon.png")).Sprite
+            });
+        }
     }
     
     public override void OnReceiveArtifact(State state)

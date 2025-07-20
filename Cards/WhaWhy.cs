@@ -44,7 +44,7 @@ public class WhaWhy : Card, IRegisterable
             ],
             Upgrade.A =>
             [
-                new ToolTipToothCardA()
+                new ToolTipToothCardA(),
             ],
             Upgrade.B =>
             [

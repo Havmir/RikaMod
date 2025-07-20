@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Nanoray.PluginManager;
 using Nickel;
+using RikaMod.Features;
 
 namespace RikaMod.Artifacts;
 
@@ -24,6 +26,8 @@ public class BoostedDeck : Artifact, IRegisterable
         });
     }
 
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    
     public override void OnPlayerDeckShuffle(State state, Combat combat)
     {
         Combat combat1 = combat;
@@ -33,6 +37,11 @@ public class BoostedDeck : Artifact, IRegisterable
         a.targetPlayer = true;
         combat1.QueueImmediate(a);
         Pulse();
+
+        if (_isplaytester)
+        {
+            Console.WriteLine("[RikaMod] BoostedDeck proc");
+        }
     }
 
 }

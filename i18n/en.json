@@ -102,7 +102,8 @@
         },
         "RandomUSB": {
             "name": "SKETCHY USB",
-            "desc": "A random USB that will add a non-temp <c=card>Safety Override</c> & gives you the oppurtunity to add one of 5 <c=f00707>Rika</c> cards to your deck."
+            "alphadesc": "A random USB that will add a non-temp <c=card>Safety Override</c> & gives you the oppurtunity to add one of 5 <c=f00707>Rika</c> cards to your deck.",
+            "desc": "A random USB that will add a non-temp <c=card>Safety Override</c> & gives you the oppurtunity to add one of 5 <c=db9b79>Rika</c> cards to your deck."
         },
         "SpareStatus": {
             "name": "SPARE STATUS",
