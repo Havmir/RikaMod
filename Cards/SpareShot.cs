@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -59,6 +60,9 @@ public class SpareShot : Card, IRegisterable
         };
     }
     
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
+    
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
@@ -76,7 +80,8 @@ public class SpareShot : Card, IRegisterable
             {
                 c.Queue(new AAttack
                 {
-                    damage = GetDmg(s, 1),
+                    damage = GetDmg(s, 2),
+                    fast = true
                 });
 
             }
@@ -85,11 +90,13 @@ public class SpareShot : Card, IRegisterable
             {
                 c.Queue(new AAttack
                 {
-                    damage = GetDmg(s, 1),
+                    damage = GetDmg(s, 2),
+                    fast = true
                 });
                 c.Queue(new AAttack
                 {
                     damage = GetDmg(s, 1),
+                    fast = true
                 });
 
             }
@@ -98,11 +105,21 @@ public class SpareShot : Card, IRegisterable
             {
                 c.Queue(new AAttack
                 {
-                    damage = GetDmg(s, 1),
-                    piercing = true
+                    damage = GetDmg(s, 2),
+                    piercing = true,
+                    fast = true
                 });
             }
         }
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] Spare Shot drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: Spareshot.cs] Spare Shot drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
+        }
+
     }
 
     private int _artmode = ArtManager.ArtNumber;
@@ -117,7 +134,7 @@ public class SpareShot : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, attack for <c=redd>{GetDmg(state, 1)}</c> damage.",
+                    description = $"On draw, attack for <c=redd>{GetDmg(state, 2)}</c> damage.",
                     artTint = "ffffff"
                 };
             }
@@ -126,7 +143,7 @@ public class SpareShot : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, attack for <c=redd>{GetDmg(state, 1)}</c> damage twice.",
+                    description = $"On draw, attack for <c=redd>{GetDmg(state, 2)}</c> damage then <c=redd>{GetDmg(state, 1)}</c> damage.",
                     artTint = "ffffff",
                     art = SpareShotA
                 };
@@ -136,7 +153,7 @@ public class SpareShot : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, attack for <c=redd>{GetDmg(state, 1)}</c> damage with <c=keyword>piercing</c>.",
+                    description = $"On draw, attack for <c=redd>{GetDmg(state, 2)}</c> damage with <c=keyword>piercing</c>.",
                     artTint = "ffffff",
                     art = SpareShotB
                 };
@@ -149,7 +166,7 @@ public class SpareShot : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, attack for <c=redd>{GetDmg(state, 1)}</c> damage.",
+                    description = $"On draw, attack for <c=redd>{GetDmg(state, 2)}</c> damage.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_Cannon
                 };
@@ -159,7 +176,7 @@ public class SpareShot : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, attack for <c=redd>{GetDmg(state, 1)}</c> damage twice.",
+                    description = $"On draw, attack for <c=redd>{GetDmg(state, 2)}</c> damage then <c=redd>{GetDmg(state, 1)}</c> damage.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_Cannon
                 };
@@ -169,7 +186,7 @@ public class SpareShot : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, attack for <c=redd>{GetDmg(state, 1)}</c> damage with <c=keyword>piercing</c>.",
+                    description = $"On draw, attack for <c=redd>{GetDmg(state, 2)}</c> damage with <c=keyword>piercing</c>.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_Cannon
                 };

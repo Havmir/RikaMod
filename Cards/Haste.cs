@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -60,6 +61,9 @@ public class Haste : Card, IRegisterable
         };
     }
     
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
+
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
@@ -108,6 +112,14 @@ public class Haste : Card, IRegisterable
                     targetPlayer = true
                 });
             }
+        }
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] Haste drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: Haste.cs] Haste drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
     }
 

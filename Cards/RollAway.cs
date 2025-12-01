@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -57,6 +58,9 @@ public class RollAway : Card, IRegisterable
         };
     }
     
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
+
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
@@ -72,14 +76,14 @@ public class RollAway : Card, IRegisterable
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new AStatus
                 {
                     status = Status.autododgeRight,
-                    statusAmount = 1,
+                    statusAmount = 2,
                     targetPlayer = true
                 });
             }
@@ -89,7 +93,7 @@ public class RollAway : Card, IRegisterable
                 c.Queue(new AStatus
                 {
                     status = Status.autododgeRight,
-                    statusAmount = 2,
+                    statusAmount = 3,
                     targetPlayer = true
                 });
             }
@@ -99,10 +103,18 @@ public class RollAway : Card, IRegisterable
                 c.Queue(new AStatus
                 {
                     status = Status.autododgeRight,
-                    statusAmount = 1,
+                    statusAmount = 2,
                     targetPlayer = true
                 });
             }
+        }
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] Roll Away drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: RollAway.cs] Roll Away drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
     }
 
@@ -118,7 +130,7 @@ public class RollAway : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 1 right <c=status>autododge</c>.",
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 right <c=status>autododge</c>.",
                     artTint = "ffffff"
                 };
             }
@@ -127,7 +139,7 @@ public class RollAway : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 2 right <c=status>autododge</c>.",
+                    description = "On draw, <c=downside>-1 energy</c> but gain 3 right <c=status>autododge</c>.",
                     artTint = "ffffff",
                     art = RollAwayA
                 };
@@ -137,7 +149,7 @@ public class RollAway : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 right <c=status>autododge</c>.",
+                    description = "On draw, gain 2 right <c=status>autododge</c>.",
                     unplayable = true,
                     artTint = "ffffff"
                 };
@@ -150,7 +162,7 @@ public class RollAway : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 1 right <c=status>autododge</c>.",
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 right <c=status>autododge</c>.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_BranchPrediction
                 };
@@ -160,7 +172,7 @@ public class RollAway : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 2 right <c=status>autododge</c>.",
+                    description = "On draw, <c=downside>-1 energy</c> but gain 3 right <c=status>autododge</c>.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_BranchPrediction
                 };
@@ -170,7 +182,7 @@ public class RollAway : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 right <c=status>autododge</c>.",
+                    description = "On draw, gain 2 right <c=status>autododge</c>.",
                     unplayable = true,
                     artTint = _artTintDefault,
                     art = StableSpr.cards_BranchPrediction

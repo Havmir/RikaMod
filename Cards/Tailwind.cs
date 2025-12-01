@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -29,7 +30,7 @@ public class Tailwind : Card, IRegisterable
             {
                 deck = ModEntry.Instance.RikaDeck
                     .Deck,
-                rarity = Rarity.uncommon,
+                rarity = Rarity.common,
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
@@ -59,13 +60,11 @@ public class Tailwind : Card, IRegisterable
         };
     }
     
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
+
     public override void OnDraw(State s, Combat c)
     {
-        /*c.Queue(new AcknowledgeRikaCardDrawn
-        {
-            CardName = "Tailwind"
-        });*/
-        
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
         _calculation++;
         ModEntry.Instance.Helper.ModData.SetModData(s, "rikaCardsPerTurnNumber", _calculation);
@@ -74,9 +73,9 @@ public class Tailwind : Card, IRegisterable
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new ADrawCard
                 {
@@ -86,9 +85,9 @@ public class Tailwind : Card, IRegisterable
 
             if (upgrade == Upgrade.A)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new ADrawCard
                 {
@@ -103,6 +102,14 @@ public class Tailwind : Card, IRegisterable
                     count = 2
                 });
             }
+        }
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] Tailwind drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: Tailwind.cs] Tailwind drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
     }
 
@@ -152,7 +159,7 @@ public class Tailwind : Card, IRegisterable
                     cost = 1,
                     description = "On draw, <c=downside>-1 energy</c> but draw 3.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Ace
+                    art = StableSpr.cards_Ace,
                 };
             }
             if (upgrade == Upgrade.A)

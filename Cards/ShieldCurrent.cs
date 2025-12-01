@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -56,9 +57,10 @@ public class ShieldCurrent : Card, IRegisterable
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-
-
-
+    
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
+    
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
@@ -74,9 +76,9 @@ public class ShieldCurrent : Card, IRegisterable
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new AStatus
                 {
@@ -96,9 +98,9 @@ public class ShieldCurrent : Card, IRegisterable
             }
             if (upgrade == Upgrade.B)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new AStatus
                 {
@@ -107,6 +109,14 @@ public class ShieldCurrent : Card, IRegisterable
                     targetPlayer = true
                 });
             }
+        }
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] Shield Current drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: ShieldCurrent.cs] Shield Current drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
     }
 

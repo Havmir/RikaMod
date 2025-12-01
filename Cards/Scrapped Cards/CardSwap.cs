@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -9,19 +8,21 @@ using RikaMod.Features;
 
 namespace RikaMod.Cards;
 
-public class BarrelRoll : Card, IRegisterable
+public class CardSwap : Card, IRegisterable
 {
     private int _calculation;
 
-    public static Spr BarrelRollA;
-    public static Spr BarrelRollB;
+    public static Spr CardSwapA;
+    public static Spr CardSwapB;
+    public static Spr CardSwapV2;
     
     public static void
         Register(IPluginPackage<IModManifest> package,
             IModHelper helper)
     {
-        BarrelRollA = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRollA.png").Sprite;
-        BarrelRollB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRollB.png").Sprite;
+        CardSwapA = ModEntry.RegisterSprite(package, "assets/Alpha/Card/CardSwapA.png").Sprite;
+        CardSwapB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/CardSwapB.png").Sprite;
+        CardSwapV2 = ModEntry.RegisterSprite(package, "assets/Card/CardSwapV2.png").Sprite;
         
         helper.Content.Cards.RegisterCard(new CardConfiguration
         {
@@ -30,13 +31,13 @@ public class BarrelRoll : Card, IRegisterable
             {
                 deck = ModEntry.Instance.RikaDeck
                     .Deck,
-                rarity = Rarity.uncommon,
+                rarity = Rarity.common,
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BarrelRoll", "name"])
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "CardSwap", "name"])
                 .Localize,
-            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRoll.png").Sprite
+            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/CardSwap.png").Sprite
         });
     }
     
@@ -46,29 +47,28 @@ public class BarrelRoll : Card, IRegisterable
         {
             Upgrade.None =>
             [
-                new ToolTipAStatusAutopilot1()
+                new ToolTipADiscard1(),
+                new ToolTipADrawCard1()
             ],
             Upgrade.A =>
             [
-                new ToolTipAStatusAutopilot2()
+                new ToolTipADiscard1(),
+                new ToolTipADrawCard2()
             ],
             Upgrade.B =>
             [
-                new ToolTipAStatusAutopilot1(),
-                new ToolTipMoveRandom2()
+                new ToolTipADiscard2(),
+                new ToolTipADrawCard2()
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
     }
     
-    private static bool _isplaytester = ArtManager.IsPlayTester;
-    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
-    
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
         {
-            CardName = "Barrel Roll"
+            CardName = "Card Swap"
         });*/
         
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
@@ -79,48 +79,39 @@ public class BarrelRoll : Card, IRegisterable
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new AStatus
+                c.Queue(new ADiscard
                 {
-                    status = Status.autopilot,
-                    statusAmount = 1,
-                    targetPlayer = true
+                    count = 1
+                });
+                c.Queue(new ADrawCard
+                {
+                    count = 1
                 });
             }
 
             if (upgrade == Upgrade.A)
             {
-                c.Queue(new AStatus
+                c.Queue(new ADiscard
                 {
-                    status = Status.autopilot,
-                    statusAmount = 2,
-                    targetPlayer = true
+                    count = 1
+                });
+                c.Queue(new ADrawCard
+                {
+                    count = 2
                 });
             }
 
             if (upgrade == Upgrade.B)
             {
-                c.Queue(new AStatus
+                c.Queue(new ADiscard
                 {
-                    status = Status.autopilot,
-                    statusAmount = 2,
-                    targetPlayer = true
+                    count = 2
                 });
-                c.Queue(new AMove
+                c.Queue(new ADrawCard
                 {
-                    dir = -2,
-                    targetPlayer = true,
-                    isRandom = true
+                    count = 2
                 });
             }
-        }
-
-        if (_isplaytester)
-        {
-            Console.WriteLine($"[RikaMod] BarrelRoll drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
-        }
-        if (_logALotOfThings)
-        {
-            ModEntry.Instance.Logger.LogInformation($"[RikaMod: BarrelRoll.cs] BarrelRoll drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
     }
 
@@ -136,7 +127,7 @@ public class BarrelRoll : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c>.",
+                    description = "On draw, discard 1 random card then draw 1.",
                     artTint = "ffffff"
                 };
             }
@@ -145,9 +136,9 @@ public class BarrelRoll : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 2 <c=status>autopilot</c>.",
+                    description = "On draw, discard 1 random card then draw 2.",
                     artTint = "ffffff",
-                    art = BarrelRollA
+                    art = CardSwapA
                 };
             }
             if (upgrade == Upgrade.B)
@@ -155,9 +146,9 @@ public class BarrelRoll : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c> & randomally move 2 spaces.",
+                    description = "On draw, discard 2 random cards then draw 2.",
                     artTint = "ffffff",
-                    art = BarrelRollB
+                    art = CardSwapB
                 };
             }
         }
@@ -168,9 +159,9 @@ public class BarrelRoll : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c>.",
+                    description = "On draw, discard 1 random card then draw 1.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = CardSwapV2
                 };
             }
             if (upgrade == Upgrade.A)
@@ -178,9 +169,9 @@ public class BarrelRoll : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 2 <c=status>autopilot</c>.",
+                    description = "On draw, discard 1 random card then draw 2.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = CardSwapV2
                 };
             }
             if (upgrade == Upgrade.B)
@@ -188,9 +179,9 @@ public class BarrelRoll : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c> & randomally move 2 spaces.",
+                    description = "On draw, discard 2 random cards then draw 2.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = CardSwapV2
                 };
             }
         }

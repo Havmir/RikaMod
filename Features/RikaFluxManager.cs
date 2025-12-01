@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using Nickel;
 using RikaMod.External;
 
@@ -13,10 +14,12 @@ public class RikaFluxManager : IKokoroApi.IV2.IStatusLogicApi.IHook
     {
         ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
         ModEntry.Instance.Helper.Events.RegisterAfterArtifactsHook(nameof(Artifact.OnPlayerAttack), OnPlayerAttack);
+        //ModEntry.Instance.Logger.LogInformation($"[RikaMod: RikaFluxManager | Constructor] RikaFlux.Status: {RikaFlux.Status}"); ~ I'm saving this in case I need to figure out how to debug something ~ Havmir 15/08/2025
     }
 
     public void OnPlayerAttack(Combat combat, State state)
     {
+        //ModEntry.Instance.Logger.LogInformation($"[RikaMod: RikaFluxManager | OnPlyerAttack] RikaFlux.Status: {RikaFlux.Status} | state.ship.Get(RikaFlux.Status): {state.ship.Get(RikaFlux.Status)}"); ~ I'm saving this in case I need to figure out how to debug something ~ Havmir 15/08/2025
         if (state.ship.Get(RikaFlux.Status) > 0)
         {
             combat.QueueImmediate(new AStatus

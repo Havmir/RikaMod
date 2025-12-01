@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -9,19 +8,17 @@ using RikaMod.Features;
 
 namespace RikaMod.Cards;
 
-public class BarrelRoll : Card, IRegisterable
+public class EnergyInvestment : Card, IRegisterable
 {
     private int _calculation;
-
-    public static Spr BarrelRollA;
-    public static Spr BarrelRollB;
     
+    public static Spr EnergyInvestmentA;
+
     public static void
         Register(IPluginPackage<IModManifest> package,
             IModHelper helper)
     {
-        BarrelRollA = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRollA.png").Sprite;
-        BarrelRollB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRollB.png").Sprite;
+        EnergyInvestmentA = ModEntry.RegisterSprite(package, "assets/Alpha/Card/EnergyInvestmentA.png").Sprite;
         
         helper.Content.Cards.RegisterCard(new CardConfiguration
         {
@@ -34,9 +31,9 @@ public class BarrelRoll : Card, IRegisterable
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BarrelRoll", "name"])
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "EnergyInvestment", "name"])
                 .Localize,
-            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRoll.png").Sprite
+            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/EnergyInvestment.png").Sprite
         });
     }
     
@@ -46,29 +43,25 @@ public class BarrelRoll : Card, IRegisterable
         {
             Upgrade.None =>
             [
-                new ToolTipAStatusAutopilot1()
+                new ToolTipAStatusEnergyNextTurn2()
             ],
             Upgrade.A =>
             [
-                new ToolTipAStatusAutopilot2()
+                new ToolTipAStatusEnergyNextTurn3()
             ],
             Upgrade.B =>
             [
-                new ToolTipAStatusAutopilot1(),
-                new ToolTipMoveRandom2()
+                new ToolTipAStatusEnergyNextTurn2()
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
     }
     
-    private static bool _isplaytester = ArtManager.IsPlayTester;
-    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
-    
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
         {
-            CardName = "Barrel Roll"
+            CardName = "Energy Investment"
         });*/
         
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
@@ -79,48 +72,45 @@ public class BarrelRoll : Card, IRegisterable
         {
             if (upgrade == Upgrade.None)
             {
+                c.Queue(new AEnergy
+                {
+                    changeAmount = -1
+                });
                 c.Queue(new AStatus
                 {
-                    status = Status.autopilot,
-                    statusAmount = 1,
+                    status = Status.energyNextTurn,
+                    statusAmount = 3,
                     targetPlayer = true
                 });
             }
 
             if (upgrade == Upgrade.A)
             {
+                c.Queue(new AEnergy
+                {
+                    changeAmount = -1
+                });
                 c.Queue(new AStatus
                 {
-                    status = Status.autopilot,
-                    statusAmount = 2,
+                    status = Status.energyNextTurn,
+                    statusAmount = 4,
                     targetPlayer = true
                 });
             }
 
             if (upgrade == Upgrade.B)
             {
+                c.Queue(new AEnergy
+                {
+                    changeAmount = -1
+                });
                 c.Queue(new AStatus
                 {
-                    status = Status.autopilot,
-                    statusAmount = 2,
+                    status = Status.energyNextTurn,
+                    statusAmount = 3,
                     targetPlayer = true
                 });
-                c.Queue(new AMove
-                {
-                    dir = -2,
-                    targetPlayer = true,
-                    isRandom = true
-                });
             }
-        }
-
-        if (_isplaytester)
-        {
-            Console.WriteLine($"[RikaMod] BarrelRoll drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
-        }
-        if (_logALotOfThings)
-        {
-            ModEntry.Instance.Logger.LogInformation($"[RikaMod: BarrelRoll.cs] BarrelRoll drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
     }
 
@@ -135,8 +125,8 @@ public class BarrelRoll : Card, IRegisterable
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c>.",
+                    cost = 1,
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>energy next turn</c>.",
                     artTint = "ffffff"
                 };
             }
@@ -144,20 +134,20 @@ public class BarrelRoll : Card, IRegisterable
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 2 <c=status>autopilot</c>.",
+                    cost = 1,
+                    description = "On draw, <c=downside>-1 energy</c> but gain 3 <c=status>energy next turn</c>.",
                     artTint = "ffffff",
-                    art = BarrelRollA
+                    art = EnergyInvestmentA
                 };
             }
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c> & randomally move 2 spaces.",
-                    artTint = "ffffff",
-                    art = BarrelRollB
+                    cost = 1,
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>energy next turn</c>.",
+                    buoyant = true,
+                    artTint = "ffffff"
                 };
             }
         }
@@ -167,32 +157,33 @@ public class BarrelRoll : Card, IRegisterable
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c>.",
+                    cost = 1,
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>energy next turn</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = StableSpr.cards_ExtraBattery
                 };
             }
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 2 <c=status>autopilot</c>.",
+                    cost = 1,
+                    description = "On draw, <c=downside>-1 energy</c> but gain 3 <c=status>energy next turn</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = StableSpr.cards_ExtraBattery
                 };
             }
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c> & randomally move 2 spaces.",
+                    cost = 1,
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>energy next turn</c>.",
+                    buoyant = true,
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = StableSpr.cards_ExtraBattery
                 };
-            }
+            } 
         }
         return default;
     }

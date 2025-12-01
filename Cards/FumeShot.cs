@@ -9,19 +9,19 @@ using RikaMod.Features;
 
 namespace RikaMod.Cards;
 
-public class BarrelRoll : Card, IRegisterable
+public class FumeShot : Card, IRegisterable
 {
     private int _calculation;
 
-    public static Spr BarrelRollA;
-    public static Spr BarrelRollB;
+    public static Spr SpareShotA;
+    public static Spr SpareShotB;
     
     public static void
         Register(IPluginPackage<IModManifest> package,
             IModHelper helper)
     {
-        BarrelRollA = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRollA.png").Sprite;
-        BarrelRollB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRollB.png").Sprite;
+        SpareShotA = ModEntry.RegisterSprite(package, "assets/Alpha/Card/SpareShotA.png").Sprite;
+        SpareShotB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/SpareShotB.png").Sprite;
         
         helper.Content.Cards.RegisterCard(new CardConfiguration
         {
@@ -34,9 +34,9 @@ public class BarrelRoll : Card, IRegisterable
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BarrelRoll", "name"])
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "FumeShot", "name"])
                 .Localize,
-            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRoll.png").Sprite
+            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/SpareShot.png").Sprite
         });
     }
     
@@ -46,16 +46,18 @@ public class BarrelRoll : Card, IRegisterable
         {
             Upgrade.None =>
             [
-                new ToolTipAStatusAutopilot1()
+                new ToolTipAAttack(),
+                new ToolTipFumeCard()
             ],
             Upgrade.A =>
             [
-                new ToolTipAStatusAutopilot2()
+                new ToolTipAAttack(),
+                new ToolTipFumeCard()
             ],
             Upgrade.B =>
             [
-                new ToolTipAStatusAutopilot1(),
-                new ToolTipMoveRandom2()
+                new ToolTipAAttack(),
+                new ToolTipFumeCard()
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -68,7 +70,7 @@ public class BarrelRoll : Card, IRegisterable
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
         {
-            CardName = "Barrel Roll"
+            CardName = "Spare Shot"
         });*/
         
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
@@ -79,49 +81,69 @@ public class BarrelRoll : Card, IRegisterable
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new AStatus
+                c.Queue(new RikaEnergyCost
                 {
-                    status = Status.autopilot,
-                    statusAmount = 1,
-                    targetPlayer = true
+                    cardCost = 1
                 });
+                c.Queue(new AAddCard()
+                {
+                    card = new TrashFumes(),
+                    destination = CardDestination.Deck,
+                    amount = 3
+                });
+                c.Queue(new AAttack
+                {
+                    damage = GetDmg(s, 4),
+                    fast = true
+                });
+
             }
 
             if (upgrade == Upgrade.A)
             {
-                c.Queue(new AStatus
+                c.Queue(new AAddCard()
                 {
-                    status = Status.autopilot,
-                    statusAmount = 2,
-                    targetPlayer = true
+                    card = new TrashFumes(),
+                    destination = CardDestination.Deck,
+                    amount = 3
                 });
+                c.Queue(new AAttack
+                {
+                    damage = GetDmg(s, 4),
+                    fast = true
+                });
+
             }
 
             if (upgrade == Upgrade.B)
             {
-                c.Queue(new AStatus
+                c.Queue(new RikaEnergyCost
                 {
-                    status = Status.autopilot,
-                    statusAmount = 2,
-                    targetPlayer = true
+                    cardCost = 1
                 });
-                c.Queue(new AMove
+                c.Queue(new AAddCard()
                 {
-                    dir = -2,
-                    targetPlayer = true,
-                    isRandom = true
+                    card = new TrashFumes(),
+                    destination = CardDestination.Deck,
+                    amount = 4
+                });
+                c.Queue(new AAttack
+                {
+                    damage = GetDmg(s, 6),
+                    piercing = true,
+                    fast = true
                 });
             }
         }
-
         if (_isplaytester)
         {
-            Console.WriteLine($"[RikaMod] BarrelRoll drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+            Console.WriteLine($"[RikaMod] Fume Shot drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
         }
         if (_logALotOfThings)
         {
-            ModEntry.Instance.Logger.LogInformation($"[RikaMod: BarrelRoll.cs] BarrelRoll drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: Fumeshot.cs] Spare Shot drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
+
     }
 
     private int _artmode = ArtManager.ArtNumber;
@@ -135,8 +157,8 @@ public class BarrelRoll : Card, IRegisterable
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c>.",
+                    cost = 1,
+                    description = $"On draw, <c=downside>-1 energy & add 3</c> <c=card>Fumes</c><c=downside> to your deck</c>; attack for <c=redd>{GetDmg(state, 4)}</c> damage.",
                     artTint = "ffffff"
                 };
             }
@@ -145,19 +167,19 @@ public class BarrelRoll : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 2 <c=status>autopilot</c>.",
+                    description = $"On draw, <c=downside>add 3</c> <c=card>Fumes</c><c=downside> to your deck</c>; attack for <c=redd>{GetDmg(state, 4)}</c> damage.",
                     artTint = "ffffff",
-                    art = BarrelRollA
+                    art = SpareShotA
                 };
             }
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c> & randomally move 2 spaces.",
+                    cost = 1,
+                    description = $"On draw, <c=downside>-1 energy & add 4</c> <c=card>Fumes</c><c=downside> to your deck</c>; attack for <c=redd>{GetDmg(state, 6)}</c> damage.",
                     artTint = "ffffff",
-                    art = BarrelRollB
+                    art = SpareShotB
                 };
             }
         }
@@ -167,10 +189,10 @@ public class BarrelRoll : Card, IRegisterable
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c>.",
+                    cost = 1,
+                    description = $"On draw, <c=downside>-1 energy & add 3</c> <c=card>Fumes</c><c=downside> to your deck</c>; attack for <c=redd>{GetDmg(state, 4)}</c> damage.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = StableSpr.cards_FumeCannon
                 };
             }
             if (upgrade == Upgrade.A)
@@ -178,19 +200,19 @@ public class BarrelRoll : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 2 <c=status>autopilot</c>.",
+                    description = $"On draw, <c=downside>add 3</c> <c=card>Fumes</c><c=downside> to your deck</c>; attack for <c=redd>{GetDmg(state, 4)}</c> damage.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = StableSpr.cards_FumeCannon
                 };
             }
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c> & randomally move 2 spaces.",
+                    cost = 1,
+                    description = $"On draw, <c=downside>-1 energy & add 3</c> <c=card>Fumes</c><c=downside> to your deck</c>; attack for <c=redd>{GetDmg(state, 4)}</c> damage.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = StableSpr.cards_FumeCannon
                 };
             }
         }

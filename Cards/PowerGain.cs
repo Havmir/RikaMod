@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -59,6 +60,9 @@ public class PowerGain : Card, IRegisterable
         };
     }
     
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
+
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
@@ -74,9 +78,9 @@ public class PowerGain : Card, IRegisterable
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -3
+                    cardCost = 3
                 });
                 c.Queue(new AStatus
                 {
@@ -93,9 +97,9 @@ public class PowerGain : Card, IRegisterable
 
             if (upgrade == Upgrade.A)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -2
+                    cardCost = 2
                 });
                 c.Queue(new AStatus
                 {
@@ -112,9 +116,9 @@ public class PowerGain : Card, IRegisterable
 
             if (upgrade == Upgrade.B)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -4
+                    cardCost = 4
                 });
                 c.Queue(new AStatus
                 {
@@ -128,6 +132,14 @@ public class PowerGain : Card, IRegisterable
                     Statusamount = 2
                 });
             }
+        }
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] Power Gain drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: PowerGain.cs] Power Gain drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
     }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -9,19 +8,17 @@ using RikaMod.Features;
 
 namespace RikaMod.Cards;
 
-public class BarrelRoll : Card, IRegisterable
+public class PeircingShots : Card, IRegisterable
 {
     private int _calculation;
-
-    public static Spr BarrelRollA;
-    public static Spr BarrelRollB;
+    
+    public static Spr PeircingShotsB;
     
     public static void
         Register(IPluginPackage<IModManifest> package,
             IModHelper helper)
     {
-        BarrelRollA = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRollA.png").Sprite;
-        BarrelRollB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRollB.png").Sprite;
+        PeircingShotsB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/PeircingShotsB.png").Sprite;
         
         helper.Content.Cards.RegisterCard(new CardConfiguration
         {
@@ -30,13 +27,13 @@ public class BarrelRoll : Card, IRegisterable
             {
                 deck = ModEntry.Instance.RikaDeck
                     .Deck,
-                rarity = Rarity.uncommon,
+                rarity = Rarity.common,
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "BarrelRoll", "name"])
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "PeircingShots", "name"])
                 .Localize,
-            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/BarrelRoll.png").Sprite
+            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/PeircingShots.png").Sprite
         });
     }
     
@@ -46,29 +43,25 @@ public class BarrelRoll : Card, IRegisterable
         {
             Upgrade.None =>
             [
-                new ToolTipAStatusAutopilot1()
+                new ToolTipAAttackPierce()
             ],
             Upgrade.A =>
             [
-                new ToolTipAStatusAutopilot2()
+                new ToolTipAAttackPierce()
             ],
             Upgrade.B =>
             [
-                new ToolTipAStatusAutopilot1(),
-                new ToolTipMoveRandom2()
+                new ToolTipAAttackPierce()
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
     }
     
-    private static bool _isplaytester = ArtManager.IsPlayTester;
-    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
-    
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
         {
-            CardName = "Barrel Roll"
+            CardName = "Peircing Shots"
         });*/
         
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
@@ -79,48 +72,56 @@ public class BarrelRoll : Card, IRegisterable
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new AStatus
+                c.Queue(new AEnergy
                 {
-                    status = Status.autopilot,
-                    statusAmount = 1,
-                    targetPlayer = true
+                    changeAmount = -1
+                });
+                c.Queue(new AAttack
+                {
+                    damage = GetDmg(s, 1),
+                    piercing = true
+                });
+                c.Queue(new AAttack
+                {
+                    damage = GetDmg(s, 1),
+                    piercing = true
                 });
             }
 
             if (upgrade == Upgrade.A)
             {
-                c.Queue(new AStatus
+                c.Queue(new AAttack
                 {
-                    status = Status.autopilot,
-                    statusAmount = 2,
-                    targetPlayer = true
+                    damage = GetDmg(s, 1),
+                });
+                c.Queue(new AAttack
+                {
+                    damage = GetDmg(s, 1),
                 });
             }
 
             if (upgrade == Upgrade.B)
             {
-                c.Queue(new AStatus
+                c.Queue(new AEnergy
                 {
-                    status = Status.autopilot,
-                    statusAmount = 2,
-                    targetPlayer = true
+                    changeAmount = -1
                 });
-                c.Queue(new AMove
+                c.Queue(new AAttack
                 {
-                    dir = -2,
-                    targetPlayer = true,
-                    isRandom = true
+                    damage = GetDmg(s, 1),
+                    piercing = true
+                });
+                c.Queue(new AAttack
+                {
+                    damage = GetDmg(s, 1),
+                    piercing = true
+                });
+                c.Queue(new AAttack
+                {
+                    damage = GetDmg(s, 1),
+                    piercing = true
                 });
             }
-        }
-
-        if (_isplaytester)
-        {
-            Console.WriteLine($"[RikaMod] BarrelRoll drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
-        }
-        if (_logALotOfThings)
-        {
-            ModEntry.Instance.Logger.LogInformation($"[RikaMod: BarrelRoll.cs] BarrelRoll drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
     }
 
@@ -135,8 +136,8 @@ public class BarrelRoll : Card, IRegisterable
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c>.",
+                    cost = 1,
+                    description = $"On draw, <c=downside>-1 energy</c> but attack for <c=redd>{GetDmg(state, 1)}</c> damage with <c=keyword>piercing</c> twice.",
                     artTint = "ffffff"
                 };
             }
@@ -145,19 +146,18 @@ public class BarrelRoll : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 2 <c=status>autopilot</c>.",
-                    artTint = "ffffff",
-                    art = BarrelRollA
+                    description = $"On draw, attack for <c=redd>{GetDmg(state, 2)}</c> damage with <c=keyword>piercing</c> twice.",
+                    artTint = "ffffff"
                 };
             }
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c> & randomally move 2 spaces.",
+                    cost = 1,
+                    description = $"On draw, <c=downside>-1 energy</c> but attack for <c=redd>{GetDmg(state, 1)}</c> damage with <c=keyword>piercing</c> thrice.",
                     artTint = "ffffff",
-                    art = BarrelRollB
+                    art = PeircingShotsB
                 };
             }
         }
@@ -167,10 +167,10 @@ public class BarrelRoll : Card, IRegisterable
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c>.",
+                    cost = 1,
+                    description = $"On draw, <c=downside>-1 energy</c> but attack for <c=redd>{GetDmg(state, 1)}</c> damage with <c=keyword>piercing</c> twice.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = StableSpr.cards_WaveBeam
                 };
             }
             if (upgrade == Upgrade.A)
@@ -178,19 +178,19 @@ public class BarrelRoll : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 2 <c=status>autopilot</c>.",
+                    description = $"On draw, attack for <c=redd>{GetDmg(state, 2)}</c> damage with <c=keyword>piercing</c> twice.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = StableSpr.cards_WaveBeam
                 };
             }
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>autopilot</c> & randomally move 2 spaces.",
+                    cost = 1,
+                    description = $"On draw, <c=downside>-1 energy</c> but attack for <c=redd>{GetDmg(state, 1)}</c> damage with <c=keyword>piercing</c> thrice.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Reroute
+                    art = StableSpr.cards_WaveBeam
                 };
             }
         }

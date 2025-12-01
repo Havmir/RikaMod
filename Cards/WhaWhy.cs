@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -53,10 +54,11 @@ public class WhaWhy : Card, IRegisterable
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-
-
-
     
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
+    private string _cardRolled = "null";
+
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
@@ -315,6 +317,32 @@ public class WhaWhy : Card, IRegisterable
                 Console.WriteLine(
                     "WhaWhy.cs returned a 5 somehow ... probally best to let Havmir know, as this isn't suppose to happen!");
             }
+
+            if (x == 1)
+            {
+                _cardRolled = "Bruise";
+            }
+            if (x == 2)
+            {
+                _cardRolled = "Buckshot";
+            }
+            if (x == 3)
+            {
+                _cardRolled = "Lightning in a bottle";
+            }
+            if (x == 4)
+            {
+                _cardRolled = "Waltz";
+            }
+            if (_isplaytester)
+            {
+                Console.WriteLine($"[RikaMod] Wha ... Why drawn | Upgrade: {upgrade} | Card Rolled: {_cardRolled} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+            }
+            if (_logALotOfThings)
+            {
+                ModEntry.Instance.Logger.LogInformation($"[RikaMod: WhaWhy.cs] Wha ... Why drawn | Upgrade: {upgrade} | Card Rolled: {_cardRolled} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
+            }
+
         }
     }
 

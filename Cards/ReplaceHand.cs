@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -104,21 +105,40 @@ public class ReplaceHand : Card, IRegisterable
             Upgrade.None =>
             [
                 new ToolTipADiscard(),
-                new ToolTipADrawCard5()
+                new ToolTipCompitent
+                {
+                    _stringString = "action.drawCard",
+                    _stringInt = $"{_replaceHandDrawAmountNone}"
+                }
             ],
             Upgrade.A =>
             [
                 new ToolTipADiscard(),
-                new ToolTipADrawCard7()
+                new ToolTipCompitent
+                {
+                    _stringString = "action.drawCard",
+                    _stringInt = $"{_replaceHandDrawAmountA}"
+                }
             ],
             Upgrade.B =>
             [
                 new ToolTipADiscard(),
-                new ToolTipADrawCard3()
+                new ToolTipCompitent
+                {
+                    _stringString = "action.drawCard",
+                    _stringInt = $"{_replaceHandDrawAmountB}"
+                }
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
     }
+
+    private int _replaceHandDrawAmountNone = 6;
+    private int _replaceHandDrawAmountA = 8;
+    private int _replaceHandDrawAmountB = 4;
+    
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
     
     public override void OnDraw(State s, Combat c)
     {
@@ -140,7 +160,7 @@ public class ReplaceHand : Card, IRegisterable
                 c.Queue(new ADiscard());
                 c.Queue(new ADrawCard
                 {
-                    count = 5
+                    count = _replaceHandDrawAmountNone
                 });
                 _whenused = c.turn;
             }
@@ -150,7 +170,7 @@ public class ReplaceHand : Card, IRegisterable
                 c.Queue(new ADiscard());
                 c.Queue(new ADrawCard
                 {
-                    count = 7
+                    count = _replaceHandDrawAmountA
                 });
                 _whenused = c.turn;
             }
@@ -162,16 +182,22 @@ public class ReplaceHand : Card, IRegisterable
 
             if (upgrade == Upgrade.B && _usedthisturn <= 19)
             {
-                Console.WriteLine(
-                    $"The next if statement happened: _usedthisturn{_usedthisturn}, _whenBused{_whenBused}, c.turn{c.turn}");
                 c.Queue(new ADiscard());
                 c.Queue(new ADrawCard
                 {
-                    count = 3
+                    count = _replaceHandDrawAmountB
                 });
                 _whenBused = c.turn;
                 _usedthisturn++;
             }
+        }
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] Replace Hand drawn | Upgrade: {upgrade} | Turn: {c.turn} | _turncount = {_turncount} | _usedthisturn = {_usedthisturn} | _whenused = {_whenused} | _whenBused = {_whenBused} | rikaCardsPerTurnNumber = {ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0)} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: ReplaceHand.cs] Replace Hand drawn | Upgrade: {upgrade} | Turn: {c.turn} | _turncount = {_turncount} | _usedthisturn = {_usedthisturn} | _whenused = {_whenused} | _whenBused = {_whenBused} | rikaCardsPerTurnNumber = {ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0)} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
         }
 
     }
@@ -188,7 +214,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = "On draw & once per turn, discard your hand and draw 5. <c=heal>(not drawn)</c>",
+                description = $"On draw & once per turn, discard your hand and draw {_replaceHandDrawAmountNone}. <c=heal>(not drawn)</c>",
                 artTint = "ffffff"
             };
         }
@@ -197,7 +223,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = "On draw & once per turn, discard your hand and draw 5. <c=damage>(drawn)</c>",
+                description = $"On draw & once per turn, discard your hand and draw {_replaceHandDrawAmountNone}. <c=damage>(drawn)</c>",
                 artTint = "ffffff",
                 art = ReplaceHandDrawn
             };
@@ -207,7 +233,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = "On draw & once per turn, discard your hand and draw 7. <c=heal>(not drawn)</c>",
+                description = $"On draw & once per turn, discard your hand and draw {_replaceHandDrawAmountA}. <c=heal>(not drawn)</c>",
                 artTint = "ffffff",
                 art = ReplaceHandA
             };
@@ -217,7 +243,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = "On draw & once per turn, discard your hand and draw 7. <c=damage>(drawn)</c>",
+                description = $"On draw & once per turn, discard your hand and draw {_replaceHandDrawAmountA}. <c=damage>(drawn)</c>",
                 artTint = "ffffff",
                 art = ReplaceHandDrawn
             };
@@ -227,7 +253,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB0
             };
@@ -237,7 +263,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB1
             };
@@ -247,7 +273,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB2
             };
@@ -257,7 +283,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB3
             };
@@ -267,7 +293,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB4
             };
@@ -277,7 +303,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB5
             };
@@ -287,7 +313,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB6
             };
@@ -297,7 +323,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB7
             };
@@ -307,7 +333,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB8
             };
@@ -317,7 +343,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB9
             };
@@ -327,7 +353,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB10
             };
@@ -337,7 +363,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB11
             };
@@ -347,7 +373,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB12
             };
@@ -357,7 +383,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB13
             };
@@ -367,7 +393,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB14
             };
@@ -377,7 +403,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB15
             };
@@ -387,7 +413,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB16
             };
@@ -397,7 +423,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB17
             };
@@ -407,7 +433,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB18
             };
@@ -417,7 +443,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB19
             };
@@ -427,7 +453,7 @@ public class ReplaceHand : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=damage>{_usedthisturn}/20</c>)",
+                description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=damage>{_usedthisturn}/20</c>)",
                 artTint = "ffffff",
                 art = ReplaceHandB20
             };
@@ -440,7 +466,7 @@ public class ReplaceHand : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw & once per turn, discard your hand and draw 5. <c=heal>(not drawn)</c>",
+                    description = $"On draw & once per turn, discard your hand and draw {_replaceHandDrawAmountNone}. <c=heal>(not drawn)</c>",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_ThinkTwice
                 };
@@ -450,7 +476,7 @@ public class ReplaceHand : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw & once per turn, discard your hand and draw 5. <c=damage>(drawn)</c>",
+                    description = $"On draw & once per turn, discard your hand and draw {_replaceHandDrawAmountNone}. <c=damage>(drawn)</c>",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_ThinkTwice
                 };
@@ -460,7 +486,7 @@ public class ReplaceHand : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw & once per turn, discard your hand and draw 7. <c=heal>(not drawn)</c>",
+                    description = $"On draw & once per turn, discard your hand and draw {_replaceHandDrawAmountA}. <c=heal>(not drawn)</c>",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_ThinkTwice
                 };
@@ -470,7 +496,7 @@ public class ReplaceHand : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw & once per turn, discard your hand and draw 7. <c=damage>(drawn)</c>",
+                    description = $"On draw & once per turn, discard your hand and draw {_replaceHandDrawAmountA}. <c=damage>(drawn)</c>",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_ThinkTwice
                 };
@@ -480,7 +506,7 @@ public class ReplaceHand : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
+                    description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=heal>{_usedthisturn}/20</c>)",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_ThinkTwice
                 };
@@ -490,7 +516,7 @@ public class ReplaceHand : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, discard your hand and draw 3. (Max 20 times a turn; <c=damage>{_usedthisturn}/20</c>)",
+                    description = $"On draw, discard your hand and draw {_replaceHandDrawAmountB}. (Max 20 times a turn; <c=damage>{_usedthisturn}/20</c>)",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_ThinkTwice
                 };
