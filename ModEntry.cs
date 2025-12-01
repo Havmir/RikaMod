@@ -11,6 +11,7 @@ using RikaMod.Artifacts;
 using RikaMod.Cards;
 using RikaMod.External;
 using RikaMod.Features;
+using TheJazMaster.MoreDifficulties;
 
 namespace RikaMod;
 
@@ -22,6 +23,8 @@ internal class ModEntry : SimpleMod
     internal IDeckEntry RikaDeck;
     internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
     internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations;
+    
+    internal IMoreDifficultiesApi? MoreDifficultiesApi { get; private set; } = null!;
     
     internal IPlayableCharacterEntryV2 Rikachar { get; }
     internal IStatusEntry Rikamissing { get; }
@@ -39,32 +42,42 @@ internal class ModEntry : SimpleMod
         typeof(SpareShot),
         typeof(ShieldCurrent),
         typeof(QuickDodge),
-        typeof(QuickShift),
-        // typeof(QuickBlock), ~ Shield Flow already does what QuickBlock does, just better 90% of the time and this card isn't that good on it's own to begin with, so I'm replacing it with other better cards.
-        typeof(CardSwap),
+        // typeof(QuickShift), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
+        typeof(QuickBlock), //~ Shield Flow already does what QuickBlock does, just better 90% of the time and this card isn't that good on it's own to begin with, so I'm replacing it with other better cards.
+        // typeof(CardSwap) ~ this was a little too niche,
         typeof(PowerBoost),
         typeof(CardInvestment),
-        typeof(PeircingShots),
-        typeof(BorrowCards),
+        // typeof(PeircingShots), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
+        //typeof(BorrowCards), ~ it was never really good or useful anywhere
+        typeof(Tailwind),
+        typeof(Dive),
+        //typeof(EmergencyShield),
+        typeof(QuickEnergy)
     ];
     private static List<Type> _rikaUncommonCardTypes = [
         typeof(BarrelRoll),
         // typeof(ParallelStasis),scrapped for easily killing off the player ~ Havmir 22/06/20225
-        typeof(CardToEnergy),
+        // typeof(CardToEnergy),  ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
         typeof(WhaWhy),
         typeof(Haste),
-        typeof(EnergyInvestment),
+        // typeof(EnergyInvestment), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
         typeof(RollAway),
-        typeof(Tailwind)
+        // typeof(ShieldDraw), ~ Due to how artifacts work on the first turn, this card is bugged ~ 17/11/2025 Havmir
+        typeof(Recast),
+        typeof(FlightDraw),
+        typeof(FumeShot)
     ];
     private static List<Type> _rikaRareCardTypes = [
         typeof(PowerGain),
         typeof(ReplaceHand),
         // typeof(RapidAttack),
         // typeof(StatusInvestment), ~ I never picked this card when play testing & I believe it to be overly weak.
-        typeof(TradeBlows),
-        typeof(Blitz),
-        typeof(CorrosionShot),
+        // typeof(TradeBlows), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
+        // typeof(Blitz), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
+        // typeof(CorrosionShot), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
+        typeof(Kiteing),
+        typeof(JetStream),
+        typeof(StatusUpdraft)
     ];
     private static List<Type> _rikaSpecialCardTypes = [
         typeof(ColorlessRikaSummon)
@@ -79,7 +92,7 @@ internal class ModEntry : SimpleMod
         typeof(SpicyBoost),
         typeof(CardRotate),
         typeof(RandomUsb),
-        typeof(SpareStatus)
+        // typeof(SpareStatus)
     ];
     private static List<Type> _rikaBossArtifacts = [
         typeof(MoralBoost),
@@ -98,12 +111,8 @@ internal class ModEntry : SimpleMod
         Instance = this;
         Harmony = new Harmony("havmir.RikaMod");
         
-        /*
-         * Some mods provide an API, which can be requested from the ModRegistry.
-         * The following is an example of a required dependency - the code would have unexpected errors if Kokoro was not present.
-         * Dependencies can (and should) be defined within the nickel.json file, to ensure proper load mod load order.
-         */ 
         KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
+        MoreDifficultiesApi = helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties");
 
         AnyLocalizations = new JsonLocalizationProvider(
             tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -146,24 +155,87 @@ internal class ModEntry : SimpleMod
         }
 
         var rikaFluxicon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/RikaFlux.png"));
-        
         RikaFluxManager.RikaFlux = helper.Content.Statuses.RegisterStatus("RikaFlux", new StatusConfiguration
         {
             Definition = new StatusDef
             {
                 isGood = true,
                 affectedByTimestop = true,
-                color = new Color("72b5f5"),
+                color = new Color("004080"),
                 icon = rikaFluxicon.Sprite
             },
             Name = AnyLocalizations.Bind(["status", "RikaFlux", "name"]).Localize,
             Description = AnyLocalizations.Bind(["status", "RikaFlux", "desc"]).Localize
         });
         
+        var rikaEnergyicon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/RikaEnergy.png"));
+        RikaEnergyManager.RikaEnergy = helper.Content.Statuses.RegisterStatus("RikaEnergy", new StatusConfiguration
+        {
+            Definition = new StatusDef
+            {
+                isGood = true,
+                affectedByTimestop = true,
+                color = new Color("92dcff"),
+                icon = rikaEnergyicon.Sprite
+            },
+            Name = AnyLocalizations.Bind(["status", "RikaEnergy", "name"]).Localize,
+            Description = AnyLocalizations.Bind(["status", "RikaEnergy", "desc"]).Localize
+        });
+        
+        var rikaBackUpShieldicon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/BackUpShield.png"));
+        RikaBackUpShieldManager.rikaBackUpShield = helper.Content.Statuses.RegisterStatus("BackUpShield", new StatusConfiguration
+        {
+            Definition = new StatusDef
+            {
+                isGood = true,
+                affectedByTimestop = true,
+                color = new Color("be00a1"),
+                icon = rikaBackUpShieldicon.Sprite
+            },
+            Name = AnyLocalizations.Bind(["status", "BackUpShield", "name"]).Localize,
+            Description = AnyLocalizations.Bind(["status", "BackUpShield", "shipdesc"]).Localize
+        });
+        
+        var rikaFlightDrawicon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/RikaFlightDraw.png"));
+        RikaFlightDrawAndKiteingManager.RikaFlightDraw = helper.Content.Statuses.RegisterStatus("RikaFlightDraw", new StatusConfiguration
+        {
+            Definition = new StatusDef
+            {
+                isGood = true,
+                affectedByTimestop = true,
+                color = new Color("1abec7"),
+                icon = rikaFlightDrawicon.Sprite
+            },
+            Name = AnyLocalizations.Bind(["status", "RikaFlightDraw", "name"]).Localize,
+            Description = AnyLocalizations.Bind(["status", "RikaFlightDraw", "desc"]).Localize
+        });
+        
+        var rikaKiteingicon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Kiteing.png"));
+        RikaFlightDrawAndKiteingManager.RikaKiteing = helper.Content.Statuses.RegisterStatus("FlightDraw",
+            new StatusConfiguration
+            {
+                Definition = new StatusDef
+                {
+                    isGood = true,
+                    affectedByTimestop = true,
+                    color = new Color("9ccef7"),
+                    icon = rikaKiteingicon.Sprite
+                },
+                Name = AnyLocalizations.Bind(["status", "Kiteing", "name"]).Localize,
+                Description = AnyLocalizations.Bind(["status", "Kiteing", "desc"]).Localize
+            });
+        
         _ = new RikaFluxManager();
+        _ = new RikaEnergyManager();
+        _ = new RikaBackUpShieldManager();
+        _ = new RikaFlightDrawAndKiteingManager();
         _ = new RikaCardsPerTurnManager();
         
         ToolTipAStatusRikaFlux.RikaFluxIcon = rikaFluxicon.Sprite;
+        ToolTipCompitent.RikaBackUpShieldicon = rikaBackUpShieldicon.Sprite;
+        ToolTipCompitent.RikaKiteingicon = rikaKiteingicon.Sprite;
+        ToolTipCompitent.RikaEnergyIcon = rikaEnergyicon.Sprite;
+        ToolTipCompitent.RikaFlightDrawIcon = rikaFlightDrawicon.Sprite;
         
         ISpriteEntry rikasTraiticon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/TikasTraitIcon.png")); 
         RikasTrait = helper.Content.Cards.RegisterTrait("RikasTrait", new()
@@ -225,10 +297,22 @@ internal class ModEntry : SimpleMod
                 {
                     cards = [
                         new SpareShot(),
-                        new ShieldCurrent()
+                        new QuickDodge()
                     ]
                 },
-                Description = AnyLocalizations.Bind(["character", "desc"]).Localize
+                Description = AnyLocalizations.Bind(["character", "desc"]).Localize,
+                ExeCardType = typeof(ColorlessRikaSummon),
+                SoloStarters = new StarterDeck
+                {
+                    cards = [
+                        new SpareShot(),
+                        new QuickDodge(),
+                        new Dive(),
+                        new PowerBoost(),
+                        new ShieldCurrent(),
+                        new Tailwind()
+                    ]
+                }
             });
         }
         else
@@ -241,20 +325,53 @@ internal class ModEntry : SimpleMod
                 {
                     cards = [
                         new SpareShot(),
-                        new ShieldCurrent()
+                        new QuickDodge()
                     ]
                 },
-                Description = AnyLocalizations.Bind(["character", "desc"]).Localize
+                Description = AnyLocalizations.Bind(["character", "desc"]).Localize,
+                ExeCardType = typeof(ColorlessRikaSummon),
+                SoloStarters = new StarterDeck
+                {
+                    cards = [
+                        new SpareShot(),
+                        new QuickDodge(),
+                        new Dive(),
+                        new PowerBoost(),
+                        new ShieldCurrent(),
+                        new Tailwind()
+                    ]
+                }
             });
         }
-
+        
+        MoreDifficultiesApi?.RegisterAltStarters(RikaDeck.Deck, new StarterDeck
+        {
+            cards = [
+                new Dive(),
+                new ShieldCurrent()
+            ]
+        });
+        
         Rikamissing = Rikachar.MissingStatus;
         
         _ = new HullLostManager();
-        
         _ = new ArtManager();
+        
+        var redTrashFumesBackground = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Alpha/Card/RedTrashFumesBackground.png"));
+        var kiteingCardBackgroundSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Card/KiteingCardBackground.png"));
+        var jetStreamCardBackgroundSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Card/PoorJetStreamArt.png"));
+        var statusUpdraftCardBackgroundSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Card/StatusUpdraftCardArt.png"));
+        Dive.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
+        ShieldDraw.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
+        EmergencyShield.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
+        Recast.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
+        EmergencyShield.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
+        Kiteing.KiteingCardBackgroundSprite = kiteingCardBackgroundSprite.Sprite;
+        JetStream.JetStreamCardBackgroundSprite = jetStreamCardBackgroundSprite.Sprite;
+        StatusUpdraft.StatusUpdraftCardBackgroundSprite = statusUpdraftCardBackgroundSprite.Sprite;
     }
     
+
 
     public static ISpriteEntry RegisterSprite(IPluginPackage<IModManifest> package, string dir)
     {
