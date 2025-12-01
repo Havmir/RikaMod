@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Features;
@@ -27,6 +28,7 @@ public class BoostedDeck : Artifact, IRegisterable
     }
 
     private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
     
     public override void OnPlayerDeckShuffle(State state, Combat combat)
     {
@@ -41,6 +43,10 @@ public class BoostedDeck : Artifact, IRegisterable
         if (_isplaytester)
         {
             Console.WriteLine("[RikaMod] BoostedDeck proc");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: BoostedDeck.cs] BoostedDeck Proc | Turn: {combat.turn}");
         }
     }
 

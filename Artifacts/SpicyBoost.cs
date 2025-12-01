@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Features;
@@ -32,6 +33,7 @@ public class SpicyBoost : Artifact, IRegisterable
     }
     
     private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
     
     public override void OnPlayerLoseHull(State state, Combat combat, int amount)
     {
@@ -47,6 +49,11 @@ public class SpicyBoost : Artifact, IRegisterable
         {
             Console.WriteLine($"[RikaMod] SpicyBoost proc for {amount}");
         }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: SpicyBoost.cs] SpicyBoost Proc | Hull lost amount: {amount} | Turn: {combat.turn}");
+        }
+
     }
     
 }

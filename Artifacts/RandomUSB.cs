@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Features;
@@ -44,6 +47,9 @@ public class RandomUsb : Artifact, IRegisterable
         }
     }
     
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
+    
     public override void OnReceiveArtifact(State state)
     {
         state.GetCurrentQueue().QueueImmediate(new ACardOffering
@@ -51,7 +57,8 @@ public class RandomUsb : Artifact, IRegisterable
             amount = 5,
             limitDeck = ModEntry.Instance.RikaDeck.Deck,
             makeAllCardsTemporary = false,
-            canSkip = true
+            canSkip = true,
+            isEvent = true
         });
         state.GetCurrentQueue().QueueImmediate(new AAddCard
         {
@@ -60,6 +67,16 @@ public class RandomUsb : Artifact, IRegisterable
             amount = 1,
             insertRandomly = true
         });
+        
+        if (_isplaytester)
+        {
+            Console.WriteLine("[RikaMod] RandomUSB picked up ~ you probally shouldn't have done that, you might have malware that overrides the safety on your ship now :3");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation("[RikaMod: RandomUSB.cs] RandomUSB picked up");
+        }
+
     }
     
     public override List<Tooltip> GetExtraTooltips()

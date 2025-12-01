@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Features;
@@ -27,6 +28,7 @@ public class MoralBoost : Artifact, IRegisterable
     }
 
     private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
     
     public override void OnTurnStart(State state, Combat combat)
     {
@@ -42,6 +44,11 @@ public class MoralBoost : Artifact, IRegisterable
         {
             Console.WriteLine("[RikaMod] Magic Rainbow Cardsleeves Proc");
         }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: MoralBoost.cs] Magic Rainbow Cardsleeves Proc | Turn: {combat.turn}");
+        }
+
     }
 
 }

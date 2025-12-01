@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Features;
@@ -27,6 +28,7 @@ public class CardRotate : Artifact, IRegisterable
     }
 
     private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
     
     public override void OnTurnStart(State state, Combat combat)
     {
@@ -44,6 +46,10 @@ public class CardRotate : Artifact, IRegisterable
         if (_isplaytester)
         {
             Console.Write("[RikaMod] Card Rotate Proc");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: CardRotate.cs] Card Rotate Proc | Turn: {combat.turn}");
         }
     }
 }
