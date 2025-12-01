@@ -1,12 +1,33 @@
 ﻿{
     "character": {
         "name": "Rika",
-        "desc": "Rika is very trigger happy and doesn't have the most patiance, so they'll be using their card effects once they're drawn."
+        "desc": "<c=db9b79>Rika</c> \nRika is very trigger happy and doesn't have the most patience, so they'll be using their card effects once they're drawn."
     },
     "status": {
         "RikaFlux": {
             "name": "Shield Flow",
             "desc": "Gain <c=keyword>{0}</c> <c=status>shield</c> when you attack. <c=downside>Lose this at the end of your turn.</c>"
+        },
+        "RikaEnergy": {
+            "name": "Rika Energy",
+            "desc": "Spend this status first before spending <c=energy>energy</c> on <c=db9b79>Rika</c> cards."
+        },
+        "BackUpShield": {
+            "name": "Back Up Shield",
+            "desc": "Upon losing hull, <c=downside>immidently lose this status</c> and gain twice that much in <c=status>temp shield</c> (<c=keyword>{0}</c>).",
+            "shipdesc": "Upon losing hull, <c=downside>immidently lose this status</c> and gain twice that much in <c=status>temp shield."
+        },
+        "RikaFlightDraw": {
+            "name": "Flight Draw",
+            "desc": "Draw {0} cards when you move. <c=downside>Lose this status at the end of your turn.</c>"
+        },
+        "Kiteing": {
+            "name": "Kiteing",
+            "desc": "Attack for <c=keyword>{0}</c> damage each time you move, but if you have strafe, this damage is added to strafe's attack instead. <c=downside>Lose this status at the end of your turn.</c>"
+        },
+        "TempStrafe": {
+            "name": "Temp Strafe",
+            "desc": "Fire for <c=keyword>{0}</c> damage immediately after each move you make. <c=downside>Lose this status at the end of your turn.</c>"
         }
     },
     "action": {
@@ -89,6 +110,39 @@
         },
         "ColorlessRikaSummon": {
             "name": "Rika.EXE"
+        },
+        "Dive": {
+            "name": "Dive"
+        },
+        "EmergencyShield": {
+            "name": "Emergency Shield"
+        },
+        "ShieldDraw": {
+            "name": "Shield Draw"
+        },
+        "Recast" : {
+            "name": "Recast"
+        },
+        "Kiteing": {
+            "name": "Kiting"
+        },
+        "JetSream": {
+            "name": "Jet Stream"
+        },
+        "QuickEnergy": {
+            "name": "Quick Energy"
+        },
+        "RikaFlightDraw": {
+            "name": "Flight Draw"
+        },
+        "JetStream": {
+            "name": "Jet Stream"
+        },
+        "StatusUpdraft": {
+            "name": "Status Updraft"
+        },
+        "FumeShot": {
+            "name": "Fume Shot"
         }
     },
     "artifact": {
