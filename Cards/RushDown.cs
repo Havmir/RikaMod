@@ -9,17 +9,14 @@ using RikaMod.Features;
 
 namespace RikaMod.Cards;
 
-public class ShieldCurrent : Card, IRegisterable
+public class RushDown : Card, IRegisterable
 {
     private int _calculation;
-
-    public static Spr ShieldCurrentB;
     
     public static void
         Register(IPluginPackage<IModManifest> package,
             IModHelper helper)
     {
-        ShieldCurrentB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/ShieldCurrentB.png").Sprite;
         
         helper.Content.Cards.RegisterCard(new CardConfiguration
         {
@@ -28,19 +25,14 @@ public class ShieldCurrent : Card, IRegisterable
             {
                 deck = ModEntry.Instance.RikaDeck
                     .Deck,
-                rarity = Rarity.common,
+                rarity = Rarity.uncommon,
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ShieldCurrent", "name"])
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "RushDown", "name"])
                 .Localize,
-            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/ShieldCurrent.png").Sprite
         });
     }
-
-    private int _rikaFluxAmountNone = 2;
-    private int _rikaFluxAmountA = 2;
-    private int _libraAmountB = 1;
     
     public override List<CardAction> GetActions(State s, Combat c)
     {
@@ -50,24 +42,36 @@ public class ShieldCurrent : Card, IRegisterable
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "RikaFlux",
-                    _stringInt = $"{_rikaFluxAmountNone}"
+                    _stringString = "status.evade"
+                },
+                new ToolTipCompitent
+                {
+                    _stringString = "status.maxShield",
+                    _stringInt = "-1"
                 }
             ],
             Upgrade.A =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "RikaFlux",
-                    _stringInt = $"{_rikaFluxAmountA}"
+                    _stringString = "status.evade"
+                },
+                new ToolTipCompitent
+                {
+                    _stringString = "status.maxShield",
+                    _stringInt = "-1"
                 }
             ],
             Upgrade.B =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.libra",
-                    _stringInt = $"{_libraAmountB}"
+                    _stringString = "status.evade"
+                },
+                new ToolTipCompitent
+                {
+                    _stringString = "status.maxShield",
+                    _stringInt = "-1"
                 }
             ],
             _ => throw new ArgumentOutOfRangeException()
@@ -76,63 +80,75 @@ public class ShieldCurrent : Card, IRegisterable
     
     private static bool _isplaytester = ArtManager.IsPlayTester;
     private static bool _logALotOfThings = ArtManager.LogALotOfThings;
-    
+
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
         {
-            CardName = "Shield Current"
+            CardName = "Haste"
         });*/
         
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
         _calculation++;
         ModEntry.Instance.Helper.ModData.SetModData(s, "rikaCardsPerTurnNumber", _calculation);
-        
+
         if (s.ship.Get(ModEntry.Instance.Rikamissing.Status) == 0)
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new RikaEnergyCost
+                c.Queue(new AStatus
                 {
-                    cardCost = 1
+                    status = Status.evade,
+                    statusAmount = 2,
+                    targetPlayer = true
                 });
                 c.Queue(new AStatus
                 {
-                    status = RikaFluxManager.RikaFlux.Status,
-                    statusAmount = 1,
+                    status = Status.maxShield,
+                    statusAmount = -1,
                     targetPlayer = true
                 });
             }
+
             if (upgrade == Upgrade.A)
             {
                 c.Queue(new AStatus
                 {
-                    status = RikaFluxManager.RikaFlux.Status,
-                    statusAmount = 1,
+                    status = Status.evade,
+                    statusAmount = 3,
                     targetPlayer = true
-                });
-            }
-            if (upgrade == Upgrade.B)
-            {
-                c.Queue(new RikaEnergyCost
-                {
-                    cardCost = 1
                 });
                 c.Queue(new AStatus
                 {
-                    status = Status.libra,
-                    statusAmount = 1,
+                    status = Status.maxShield,
+                    statusAmount = -1,
+                    targetPlayer = true
+                });
+            }
+
+            if (upgrade == Upgrade.B)
+            {
+                c.Queue(new AStatus
+                {
+                    status = Status.evade,
+                    statusAmount = 2,
+                    targetPlayer = true
+                });
+                c.Queue(new AStatus
+                {
+                    status = Status.maxShield,
+                    statusAmount = -1,
                     targetPlayer = true
                 });
             }
         }
         if (_isplaytester)
         {
-            Console.WriteLine($"[RikaMod] Shield Current drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+            Console.WriteLine($"[RikaMod] Quick Dodge drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
         }
         if (_logALotOfThings)
         {
-            ModEntry.Instance.Logger.LogInformation($"[RikaMod: ShieldCurrent.cs] Shield Current drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: QuickDodge.cs] Quick Dodge drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
     }
 
@@ -148,17 +164,20 @@ public class ShieldCurrent : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
-                    artTint = "ffffff"
+                    description = "On draw, gain 2 <c=status>evade</c>, <c=downside>but -1</c> <c=status>shield capacity</c>.",
+                    artTint = "ffffff",
+                    retain = true,
+                    exhaust = true
                 };
             }
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = $"On draw, gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
-                    artTint = "ffffff"
+                    cost = 1,
+                    description = "On draw, gain 3 <c=status>evade</c>, <c=downside>but -1</c> <c=status>shield capacity</c>.",
+                    artTint = "ffffff",
+                    exhaust = true
                 };
             }
             if (upgrade == Upgrade.B)
@@ -166,9 +185,9 @@ public class ShieldCurrent : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_libraAmountB} <c=status>flux</c>.",
+                    description = "On draw, gain 2 <c=status>evade</c>, <c=downside>but -1</c> <c=status>shield capacity</c>.",
                     artTint = "ffffff",
-                    art = ShieldCurrentB
+                    retain = true
                 };
             }
         }
@@ -178,10 +197,11 @@ public class ShieldCurrent : Card, IRegisterable
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
+                    cost = 0,
+                    description = "On draw, gain 2 <c=status>evade</c>, <c=downside>but   -1</c> <c=status>shield capacity</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Flux
+                    art = StableSpr.cards_Dodge,
+                    exhaust = true
                 };
             }
             if (upgrade == Upgrade.A)
@@ -189,21 +209,23 @@ public class ShieldCurrent : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
+                    description = "On draw, gain 3 <c=status>evade</c>, <c=downside>but   -1</c> <c=status>shield capacity</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Flux
+                    art = StableSpr.cards_Dodge,
+                    exhaust = true
                 };
             }
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_libraAmountB} <c=status>flux</c>.",
+                    cost = 0,
+                    description = "On draw, gain 2 <c=status>evade</c>, <c=downside>but   -1</c> <c=status>shield capacity</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Flux
+                    art = StableSpr.cards_Dodge,
+                    retain = true
                 };
-            }  
+            }
         }
         return default;
     }

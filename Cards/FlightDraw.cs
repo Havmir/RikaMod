@@ -33,6 +33,10 @@ public class FlightDraw : Card, IRegisterable
         });
     }
     
+    private int _flightDrawCostNone = 1;
+    private int _flightDrawCostA = 0;
+    private int _flightDrawCostB = 1;
+     
     public override List<CardAction> GetActions(State s, Combat c)
     {
         return upgrade switch
@@ -76,7 +80,7 @@ public class FlightDraw : Card, IRegisterable
             {
                 c.Queue(new RikaEnergyCost
                 {
-                    cardCost = 2
+                    cardCost = _flightDrawCostNone
                 });
                 c.Queue(new AStatus
                 {
@@ -89,7 +93,7 @@ public class FlightDraw : Card, IRegisterable
             {
                 c.Queue(new RikaEnergyCost
                 {
-                    cardCost = 1
+                    cardCost = _flightDrawCostA
                 });
                 c.Queue(new AStatus
                 {
@@ -102,7 +106,7 @@ public class FlightDraw : Card, IRegisterable
             {
                 c.Queue(new RikaEnergyCost
                 {
-                    cardCost = 2
+                    cardCost = _flightDrawCostB
                 });
                 c.Queue(new AStatus
                 {
@@ -130,18 +134,38 @@ public class FlightDraw : Card, IRegisterable
         {
             return new CardData
             {
-                cost = 2,
-                description = "On draw, <c=downside>-2 energy</c>, but gain 1      <c=status>flight draw</c>.",
+                cost = _flightDrawCostNone,
+                description = $"On draw, <c=downside>-{_flightDrawCostNone} energy</c>, but gain 1      <c=status>flight draw</c>.",
                 artTint = _artTintDefault,
                 art = StableSpr.cards_Options
             };
         }
-        if (upgrade == Upgrade.A)
+        if (upgrade == Upgrade.A && _flightDrawCostA > 0)
         {
             return new CardData
             {
-                cost = 1,
-                description = "On draw, <c=downside>-1 energy</c>, but gain 1     <c=status>flight draw</c>.",
+                cost = _flightDrawCostA,
+                description = $"On draw, <c=downside>-{_flightDrawCostA} energy</c>, but gain 1     <c=status>flight draw</c>.",
+                artTint = _artTintDefault,
+                art = StableSpr.cards_Options
+            };
+        }
+        if (upgrade == Upgrade.A && _flightDrawCostA == 0)
+        {
+            return new CardData
+            {
+                cost = _flightDrawCostA,
+                description = "On draw, gain 1     <c=status>flight draw</c>.",
+                artTint = _artTintDefault,
+                art = StableSpr.cards_Options
+            };
+        }   
+        if (upgrade == Upgrade.A && _flightDrawCostA < 0)
+        {
+            return new CardData
+            {
+                cost = _flightDrawCostA,
+                description = "Tell Havmir that costs should not be negative for FlightDraw.cs",
                 artTint = _artTintDefault,
                 art = StableSpr.cards_Options
             };
@@ -150,8 +174,8 @@ public class FlightDraw : Card, IRegisterable
         {
             return new CardData
             {
-                cost = 2,
-                description = "On draw, <c=downside>-2 energy</c>, but gain 2      <c=status>flight draw</c>.",
+                cost = _flightDrawCostB,
+                description = $"On draw, <c=downside>-{_flightDrawCostB} energy</c>, but gain 2      <c=status>flight draw</c>.",
                 artTint = _artTintDefault,
                 art = StableSpr.cards_Options
             };

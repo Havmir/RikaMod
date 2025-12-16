@@ -40,21 +40,37 @@ public class Tailwind : Card, IRegisterable
         });
     }
     
+    private int _drawCardAmountNone = 4;
+    private int _drawCardAmountA = 6;
+    private int _drawCardAmountB = 3;
+    
     public override List<CardAction> GetActions(State s, Combat c)
     {
         return upgrade switch
         {
             Upgrade.None =>
             [
-                new ToolTipADrawCard3()
+                new ToolTipCompitent
+                {
+                    _stringString = "action.drawCard",
+                    _stringInt = $"{_drawCardAmountNone}"
+                }
             ],
             Upgrade.A =>
             [
-                new ToolTipADrawCard5()
+                new ToolTipCompitent
+                {
+                    _stringString = "action.drawCard",
+                    _stringInt = $"{_drawCardAmountA}"
+                }
             ],
             Upgrade.B =>
             [
-                new ToolTipADrawCard2()
+                new ToolTipCompitent
+                {
+                    _stringString = "action.drawCard",
+                    _stringInt = $"{_drawCardAmountB}"
+                }
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -79,7 +95,7 @@ public class Tailwind : Card, IRegisterable
                 });
                 c.Queue(new ADrawCard
                 {
-                    count = 3
+                    count = _drawCardAmountNone
                 });
             }
 
@@ -91,7 +107,7 @@ public class Tailwind : Card, IRegisterable
                 });
                 c.Queue(new ADrawCard
                 {
-                    count = 5
+                    count = _drawCardAmountA
                 });
             }
 
@@ -99,7 +115,7 @@ public class Tailwind : Card, IRegisterable
             {
                 c.Queue(new ADrawCard
                 {
-                    count = 2
+                    count = _drawCardAmountB
                 });
             }
         }
@@ -125,7 +141,7 @@ public class Tailwind : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but draw 3.",
+                    description = $"On draw, <c=downside>-1 energy</c> but draw {_drawCardAmountNone}.",
                     artTint = "ffffff"
                 };
             }
@@ -134,7 +150,7 @@ public class Tailwind : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but draw 5.",
+                    description = $"On draw, <c=downside>-1 energy</c> but draw {_drawCardAmountA}.",
                     artTint = "ffffff",
                     art = TailwindA
                 };
@@ -144,7 +160,7 @@ public class Tailwind : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, draw 2.",
+                    description = $"On draw, draw {_drawCardAmountB}.",
                     art = TailwindB,
                     artTint = "ffffff"
                 };
@@ -157,7 +173,7 @@ public class Tailwind : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but draw 3.",
+                    description = $"On draw, <c=downside>-1 energy</c> but draw {_drawCardAmountNone}.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_Ace,
                 };
@@ -167,7 +183,7 @@ public class Tailwind : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but draw 5.",
+                    description = $"On draw, <c=downside>-1 energy</c> but draw {_drawCardAmountA}.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_Ace
                 };
@@ -177,7 +193,7 @@ public class Tailwind : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, draw 2.",
+                    description = $"On draw, draw {_drawCardAmountB}.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_Ace
                 };

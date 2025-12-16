@@ -135,7 +135,8 @@ public class Kiteing : Card, IRegisterable
                 cost = 2,
                 description = $"On draw, <c=downside>-2 energy</c>, but gain 1      <c=status>{_kiteingStatusName}</c>.",
                 artTint = _artTintDefault,
-                art = KiteingCardBackgroundSprite
+                art = KiteingCardBackgroundSprite,
+                retain = true
             };
         }
         if (upgrade == Upgrade.A)
@@ -145,7 +146,8 @@ public class Kiteing : Card, IRegisterable
                 cost = 1,
                 description = $"On draw, <c=downside>-1 energy</c>, but gain 1      <c=status>{_kiteingStatusName}</c>.",
                 artTint = _artTintDefault,
-                art = KiteingCardBackgroundSprite
+                art = KiteingCardBackgroundSprite,
+                retain = true
             };
         }
         if (upgrade == Upgrade.B)
@@ -155,7 +157,8 @@ public class Kiteing : Card, IRegisterable
                 cost = 2,
                 description = $"On draw, <c=downside>-2 energy</c>, but gain 2      <c=status>{_kiteingStatusName}</c>.",
                 artTint = _artTintDefault,
-                art = KiteingCardBackgroundSprite
+                art = KiteingCardBackgroundSprite,
+                retain = true
             };
         }
         return default;

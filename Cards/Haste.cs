@@ -46,16 +46,50 @@ public class Haste : Card, IRegisterable
         {
             Upgrade.None =>
             [
-                new ToolTipAStatusHermes1()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.hermes",
+                    _stringInt = "1"
+                },
+                new AStatus
+                {
+                    status = Status.hermes,
+                    statusAmount = -1,
+                    targetPlayer = true
+                }
             ],
             Upgrade.A =>
             [
-                new ToolTipAStatusHermes1(),
-                new ToolTipAStatusEvade()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.hermes",
+                    _stringInt = "1"
+                },
+                new ToolTipCompitent
+                {
+                    _stringString = "status.evade",
+                    _stringInt = "1"
+                },
+                new AStatus
+                {
+                    status = Status.hermes,
+                    statusAmount = -1,
+                    targetPlayer = true
+                }
             ],
             Upgrade.B =>
             [
-                new ToolTipAStatusHermes2()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.hermes",
+                    _stringInt = "2"
+                },
+                new AStatus
+                {
+                    status = Status.hermes,
+                    statusAmount = -2,
+                    targetPlayer = true
+                }
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -135,7 +169,7 @@ public class Haste : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 <c=status>hermes boots</c>.",
+                    description = "On draw, gain 1 <c=status>hermes boots</c>. On play, lose 1 <c=status>hermes boots</c>.",
                     artTint = "ffffff"
                 };
             }
@@ -144,7 +178,7 @@ public class Haste : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 <c=status>hermes boots</c> & 1 <c=status>evade</c>.",
+                    description = "On draw, gain 1 <c=status>hermes boots</c> & 1 <c=status>evade</c>. On play, lose 1 <c=status>hermes boots</c>.",
                     artTint = "ffffff",
                     art = HasteA
                 };
@@ -154,7 +188,7 @@ public class Haste : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 2 <c=status>hermes boots</c>.",
+                    description = "On draw, gain 2 <c=status>hermes boots</c>. On play, lose 2 <c=status>hermes boots</c>.",
                     artTint = "ffffff",
                     art = HasteB
                 };
@@ -167,7 +201,7 @@ public class Haste : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 <c=status>hermes boots</c>.",
+                    description = "On draw, + 1 <c=status>hermes boots</c>. On play, - 1 <c=status>hermes boots</c>.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_Fleetfoot
                 };
@@ -177,7 +211,7 @@ public class Haste : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 <c=status>hermes boots</c> & 1 <c=status>evade</c>.",
+                    description = "On draw, + 1 <c=status>hermes boots</c> & 1 <c=status>evade</c>; on play, - 1 <c=status>hermes boots</c>.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_Fleetfoot
                 };
@@ -187,7 +221,7 @@ public class Haste : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 2 <c=status>hermes boots</c>.",
+                    description = "On draw, + 2 <c=status>hermes boots</c>; on play, - 2 <c=status>hermes boots</c>.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_Fleetfoot
                 };

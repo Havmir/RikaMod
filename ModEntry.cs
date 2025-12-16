@@ -52,7 +52,8 @@ internal class ModEntry : SimpleMod
         typeof(Tailwind),
         typeof(Dive),
         //typeof(EmergencyShield),
-        typeof(QuickEnergy)
+        typeof(QuickEnergy),
+        typeof(PowerBoostExpirement1)
     ];
     private static List<Type> _rikaUncommonCardTypes = [
         typeof(BarrelRoll),
@@ -61,11 +62,13 @@ internal class ModEntry : SimpleMod
         typeof(WhaWhy),
         typeof(Haste),
         // typeof(EnergyInvestment), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
-        typeof(RollAway),
+        // typeof(RollAway), ~ Cut in the 0.3.1 update as it wasn't ever really a good pull to grab. 14/12/2025 Havmir
         // typeof(ShieldDraw), ~ Due to how artifacts work on the first turn, this card is bugged ~ 17/11/2025 Havmir
         typeof(Recast),
         typeof(FlightDraw),
-        typeof(FumeShot)
+        // typeof(FumeShot) ~ Too much worse compared to Peri's Frontloaded Blast ~ 12/12/2025 Havmir
+        typeof(RecoilShot),
+        typeof(RushDown)
     ];
     private static List<Type> _rikaRareCardTypes = [
         typeof(PowerGain),
@@ -76,8 +79,10 @@ internal class ModEntry : SimpleMod
         // typeof(Blitz), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
         // typeof(CorrosionShot), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
         typeof(Kiteing),
-        typeof(JetStream),
-        typeof(StatusUpdraft)
+        // typeof(JetStream), ~ Too much free energy, so it got scraped in favor of Aggressive Gamble ~ 12/12/2025 Havmir
+        // typeof(StatusUpdraft), ~ getting boost from this card was being iffy in terms of gameplay ~ 15/12/2025 Havmir
+        typeof(AggressiveGamble),
+        typeof(AdjustGameplan)
     ];
     private static List<Type> _rikaSpecialCardTypes = [
         typeof(ColorlessRikaSummon)
@@ -236,6 +241,7 @@ internal class ModEntry : SimpleMod
         ToolTipCompitent.RikaKiteingicon = rikaKiteingicon.Sprite;
         ToolTipCompitent.RikaEnergyIcon = rikaEnergyicon.Sprite;
         ToolTipCompitent.RikaFlightDrawIcon = rikaFlightDrawicon.Sprite;
+        ToolTipCompitent.RikaFluxIcon = rikaFluxicon.Sprite;
         
         ISpriteEntry rikasTraiticon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/TikasTraitIcon.png")); 
         RikasTrait = helper.Content.Cards.RegisterTrait("RikasTrait", new()
@@ -361,6 +367,8 @@ internal class ModEntry : SimpleMod
         var kiteingCardBackgroundSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Card/KiteingCardBackground.png"));
         var jetStreamCardBackgroundSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Card/PoorJetStreamArt.png"));
         var statusUpdraftCardBackgroundSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Card/StatusUpdraftCardArt.png"));
+        var powerBoostAlphaSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Alpha/Card/PowerBoost.png"));
+        var powerBoostBAlphaSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Alpha/Card/PowerBoostB.png"));
         Dive.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
         ShieldDraw.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
         EmergencyShield.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
@@ -369,6 +377,8 @@ internal class ModEntry : SimpleMod
         Kiteing.KiteingCardBackgroundSprite = kiteingCardBackgroundSprite.Sprite;
         JetStream.JetStreamCardBackgroundSprite = jetStreamCardBackgroundSprite.Sprite;
         StatusUpdraft.StatusUpdraftCardBackgroundSprite = statusUpdraftCardBackgroundSprite.Sprite;
+        PowerBoost.PowerBoostAlphaSprite = powerBoostAlphaSprite.Sprite;
+        PowerBoost.PowerBoostBAlphaSprite = powerBoostAlphaSprite.Sprite;
     }
     
 

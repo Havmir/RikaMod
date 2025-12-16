@@ -13,7 +13,7 @@ public class ArtManager
 
     // I am mostly using this to control Console.WriteLine happening or not.
     // Set to true if you want things in the console--set to false if you do not.
-    private static bool _isplaytester = false;
+    private static bool _isplaytester = true;
 
     // This controls the name of the Kite-ing / Temp Strafe Status
     // Your options are "temp strafe" or "kite-ing"

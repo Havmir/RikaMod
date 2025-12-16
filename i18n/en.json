@@ -1,7 +1,7 @@
 ﻿{
     "character": {
         "name": "Rika",
-        "desc": "<c=db9b79>Rika</c> \nRika is very trigger happy and doesn't have the most patience, so they'll be using their card effects once they're drawn."
+        "desc": "<c=db9b79>RIKA</c> \nRika is a pilot. Their cards are based around <c=keyword>on draw</c> effects and <c=keyword>movement</c>."
     },
     "status": {
         "RikaFlux": {
@@ -143,6 +143,18 @@
         },
         "FumeShot": {
             "name": "Fume Shot"
+        },
+        "RecoilShot": {
+            "name": "Recoil Shot"
+        },
+        "AggressiveGamble": {
+            "name": "Aggressive Gamble"
+        },
+        "RushDown" : {
+            "name": "Rush Down"
+        },
+        "AdjustGameplan": {
+            "name": "Adjust Gameplan"
         }
     },
     "artifact": {
@@ -152,11 +164,11 @@
         },
         "CardRotate": {
             "name": "CARD ROTATE",
-            "desc": "At the start of your turn, discard 2 cards then draw 2 cards."
+            "desc": "At the start of your turn, discard 2 random cards then draw 2 cards."
         },
         "RandomUSB": {
             "name": "SKETCHY USB",
-            "alphadesc": "A random USB that will add a non-temp <c=card>Safety Override</c> & gives you the oppurtunity to add one of 5 <c=f00707>Rika</c> cards to your deck.",
+            "alphadesc": "Upon gaining this artifact, gain 1 non-temp <c=card>Safety Override</c> & have the choice to add one of 5 <c=f00707>Rika</c> cards to your deck.",
             "desc": "A random USB that will add a non-temp <c=card>Safety Override</c> & gives you the oppurtunity to add one of 5 <c=db9b79>Rika</c> cards to your deck."
         },
         "SpareStatus": {

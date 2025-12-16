@@ -33,6 +33,11 @@ public class QuickEnergy : Card, IRegisterable
         });
     }
     
+    private int _energyAmountNone = 3;
+    private int _energyAmountA = 4;
+    private int _energyAmountB = 1;
+    private int _energyNextTurnAmountB = 1;
+    
     public override List<CardAction> GetActions(State s, Combat c)
     {
         return upgrade switch
@@ -42,7 +47,7 @@ public class QuickEnergy : Card, IRegisterable
                 new ToolTipCompitent
                 {
                     _stringString = "action.gainEnergy",
-                    _stringInt = "2"
+                    _stringInt = $"{_energyAmountNone}"
                 },
             ],
             Upgrade.A =>
@@ -50,7 +55,7 @@ public class QuickEnergy : Card, IRegisterable
                 new ToolTipCompitent
                 {
                     _stringString = "action.gainEnergy",
-                    _stringInt = "3"
+                    _stringInt = $"{_energyAmountA}"
                 },
             ],
             Upgrade.B =>
@@ -58,12 +63,12 @@ public class QuickEnergy : Card, IRegisterable
                 new ToolTipCompitent
                 {
                     _stringString = "action.gainEnergy",
-                    _stringInt = "1"
+                    _stringInt = $"{_energyAmountB}"
                 },
                 new ToolTipCompitent
                 {
                     _stringString = "status.energyNextTurn",
-                    _stringInt = "1"
+                    _stringInt = $"{_energyNextTurnAmountB}"
                 },
             ],
             _ => throw new ArgumentOutOfRangeException()
@@ -81,21 +86,27 @@ public class QuickEnergy : Card, IRegisterable
             {
                 c.Queue(new AEnergy
                 {
-                    changeAmount = 2
+                    changeAmount = _energyAmountNone
                 });
             }
             if (upgrade == Upgrade.A)
             {
                 c.Queue(new AEnergy
                 {
-                    changeAmount = 3
+                    changeAmount = _energyAmountA
                 });
             }
             if (upgrade == Upgrade.B)
             {
                 c.Queue(new AEnergy
                 {
-                    changeAmount = 1
+                    changeAmount = _energyAmountB
+                });
+                c.Queue(new AStatus
+                {
+                    status = Status.energyNextTurn,
+                    statusAmount = _energyNextTurnAmountB,
+                    targetPlayer = true
                 });
             }
         }
@@ -118,7 +129,7 @@ public class QuickEnergy : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = "On draw, gain 2 <c=energy>energy</c>.",
+                description = $"On draw, gain {_energyAmountNone} <c=energy>energy</c>.",
                 artTint = _artTintDefault,
                 art = StableSpr.cards_ExtraBattery,
                 unplayable = true,
@@ -130,7 +141,7 @@ public class QuickEnergy : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = "On draw, gain 3 <c=energy>energy</c>.",
+                description = $"On draw, gain {_energyAmountA} <c=energy>energy</c>.",
                 artTint = _artTintDefault,
                 art = StableSpr.cards_ExtraBattery,
                 unplayable = true,
@@ -142,7 +153,7 @@ public class QuickEnergy : Card, IRegisterable
             return new CardData
             {
                 cost = 0,
-                description = "On draw, gain 1 <c=energy>energy</c> & 1 <c=status>energy next turn</c>.",
+                description = $"On draw, gain {_energyAmountB} <c=energy>energy</c> & {_energyNextTurnAmountB} <c=status>energy next turn</c>.",
                 artTint = _artTintDefault,
                 art = StableSpr.cards_ExtraBattery,
                 unplayable = true

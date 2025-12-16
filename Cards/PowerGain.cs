@@ -46,15 +46,32 @@ public class PowerGain : Card, IRegisterable
         {
             Upgrade.None =>
             [
-                new ToolTipAStatusPowerdrive1()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.powerdrive",
+                    _stringInt = "1"
+                }
             ],
             Upgrade.A =>
             [
-                new ToolTipAStatusPowerdrive1()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.powerdrive",
+                    _stringInt = "1"
+                }
             ],
             Upgrade.B =>
             [
-                new ToolTipAStatusPowerdrive2()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.powerdrive",
+                    _stringInt = "2"
+                },
+                new ToolTipCompitent
+                {
+                    _stringString = "status.energyLessNextTurn",
+                    _stringInt = "2"
+                }
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -175,10 +192,11 @@ public class PowerGain : Card, IRegisterable
                 return new CardData
                 {
                     cost = 4,
-                    description = "On draw, <c=downside>-4 energy</c> but gain 2 <c=status>powerdrive</c>.",
+                    description = "On draw, <c=downside>-4 energy</c> but gain 2 <c=status>powerdrive</c> & <c=status>less energy next turn</c>.",
                     retain = true,
                     artTint = "ffffff",
-                    art = PowerGainB
+                    art = PowerGainB,
+                    unplayable = true
                 };
             }
         }
@@ -211,10 +229,11 @@ public class PowerGain : Card, IRegisterable
                 return new CardData
                 {
                     cost = 4,
-                    description = "On draw, <c=downside>-4 energy</c> but gain 2 <c=status>powerdrive</c>.",
+                    description = "On draw, <c=downside>-4 energy</c> but gain 2 <c=status>powerdrive</c> & <c=status>less energy next turn</c>.",
                     retain = true,
                     artTint = _artTintDefault,
-                    art = PowerGainBv2
+                    art = PowerGainBv2,
+                    unplayable = true
                 };
             }
         }

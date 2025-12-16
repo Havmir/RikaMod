@@ -71,8 +71,8 @@ public class QuickBlock : Card, IRegisterable
     }
 
     private int _tempShieldAmountNone = 3;
-    private int _tempShieldAmountA = 5;
-    private int _tempShieldAmountB = 3;
+    private int _tempShieldAmountA = 4;
+    private int _tempShieldAmountB = 2;
     private int _shieldAmountB = 2;
     
     public override void OnDraw(State s, Combat c)

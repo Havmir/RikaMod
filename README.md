@@ -1,3 +1,55 @@
+0.3.2-Beta Changelog:
+
+The manager for the temp strafe and flight draw status should have very low priority to help with conflicts with other mods.
+
+Card Rotate now specifies discarding random cards
+
+0.3.1-Beta Changelog:
+
+Quick Energy now gives an extra energy for the none and A upgrades.
+
+Cut Roll Away
+
+Added Rush Down to replace Roll Away
+
+Shield Current now gives an extra shield flow for the none and A upgrades
+
+Fixed PowerBoost's sprite being loaded twice
+
+Cut Status Updraft, as getting boost from that card was being iffy in terms of gameplay
+
+Added Adjust Gameplan to replace Status Updraft and to expirement with having a duel card for Rika.
+
+Tailwind now gives an extra card for all 3 upgrades
+
+Rika's descrioption is updated to be more in line with Vanilla's
+
+RandomUSB's description is updated to be more in line with Vanilla's
+
+0.3.0-Beta Changelog:
+
+PowerBoost got buffed (I got weird with this and put it in its own file)
+
+Card Investment now gives 2 extra draw per turn now (and now I can easily mess with values)
+
+Flight Draw's costs are reduced by 1
+
+Cut Fume Shot for now
+
+Added Recoil Shot as a replacement for Fume Shot and to experiment with having Exhaust on my cards
+
+Cut Jet Stream
+
+Added Aggressive Gamble as a replacement for Jet Stream and to experiment with having recycle on a card
+
+Kiting now has retain.
+
+Power Gain's power B now gives 2 less energy next turn and is unplayable
+
+Quick Block's upgrades now give one less temp shield each.
+
+Quick Dodge now has 1 evade added to each upgrade & retain is added to both the none & B upgrade. Also made all upgrades cost 1 energy.
+
 0.2.3-Beta Changelog:
 
 "update" 0.2.2-Beta was never released (or finished)

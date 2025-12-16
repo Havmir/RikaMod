@@ -44,15 +44,24 @@ public class QuickDodge : Card, IRegisterable
         {
             Upgrade.None =>
             [
-                new ToolTipAStatusEvade()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.evade"
+                }
             ],
             Upgrade.A =>
             [
-                new ToolTipAStatusEvade()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.evade"
+                }
             ],
             Upgrade.B =>
             [
-                new ToolTipAStatusEvade()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.evade"
+                }
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -83,17 +92,21 @@ public class QuickDodge : Card, IRegisterable
                 c.Queue(new AStatus
                 {
                     status = Status.evade,
-                    statusAmount = 1,
+                    statusAmount = 2,
                     targetPlayer = true
                 });
             }
 
             if (upgrade == Upgrade.A)
             {
+                c.Queue(new RikaEnergyCost
+                {
+                    cardCost = 1
+                });
                 c.Queue(new AStatus
                 {
                     status = Status.evade,
-                    statusAmount = 1,
+                    statusAmount = 2,
                     targetPlayer = true
                 });
             }
@@ -107,7 +120,7 @@ public class QuickDodge : Card, IRegisterable
                 c.Queue(new AStatus
                 {
                     status = Status.evade,
-                    statusAmount = 2,
+                    statusAmount = 3,
                     targetPlayer = true
                 });
             }
@@ -134,16 +147,17 @@ public class QuickDodge : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 1 <c=status>evade</c>.",
-                    artTint = "ffffff"
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>evade</c>.",
+                    artTint = "ffffff",
+                    retain = true
                 };
             }
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>evade</c>.",
+                    cost = 1,
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>evade</c>.",
                     artTint = "ffffff"
                 };
             }
@@ -152,9 +166,9 @@ public class QuickDodge : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>evade</c>.",
+                    description = "On draw, <c=downside>-1 energy</c> but gain 3 <c=status>evade</c>.",
                     artTint = "ffffff",
-                    art = QuickDodgeB
+                    retain = true
                 };
             }
         }
@@ -165,17 +179,18 @@ public class QuickDodge : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 1 <c=status>evade</c>.",
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>evade</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Dodge
+                    art = StableSpr.cards_Dodge,
+                    retain = true
                 };
             }
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>evade</c>.",
+                    cost = 1,
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>evade</c>.",
                     artTint = _artTintDefault,
                     art = StableSpr.cards_Dodge
                 };
@@ -185,9 +200,10 @@ public class QuickDodge : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>evade</c>.",
+                    description = "On draw, <c=downside>-1 energy</c> but gain 3 <c=status>evade</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Dodge
+                    art = StableSpr.cards_Dodge,
+                    retain = true
                 };
             }
         }

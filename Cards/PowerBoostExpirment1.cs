@@ -9,17 +9,19 @@ using RikaMod.Features;
 
 namespace RikaMod.Cards;
 
-public class ShieldCurrent : Card, IRegisterable
+public class PowerBoostExpirement1 : Card, IRegisterable
 {
     private int _calculation;
 
-    public static Spr ShieldCurrentB;
+    public static Spr PowerBoostAlphaSprite;
+    public static Spr PowerBoostBAlphaSprite;
+    public static Spr PowerBoostB;
     
     public static void
         Register(IPluginPackage<IModManifest> package,
             IModHelper helper)
     {
-        ShieldCurrentB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/ShieldCurrentB.png").Sprite;
+        PowerBoostB = PowerBoostBAlphaSprite;
         
         helper.Content.Cards.RegisterCard(new CardConfiguration
         {
@@ -32,15 +34,15 @@ public class ShieldCurrent : Card, IRegisterable
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ShieldCurrent", "name"])
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "PowerBoost", "name"])
                 .Localize,
-            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/ShieldCurrent.png").Sprite
+            Art = PowerBoostAlphaSprite
         });
     }
-
-    private int _rikaFluxAmountNone = 2;
-    private int _rikaFluxAmountA = 2;
-    private int _libraAmountB = 1;
+    
+    private int _overdriveAmountNone = 2;
+    private int _overdriveAmountA = 2;
+    private int _overdriveAmountB = 3;
     
     public override List<CardAction> GetActions(State s, Combat c)
     {
@@ -50,24 +52,24 @@ public class ShieldCurrent : Card, IRegisterable
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "RikaFlux",
-                    _stringInt = $"{_rikaFluxAmountNone}"
+                    _stringString = "status.overdrive",
+                    _stringInt = $"{_overdriveAmountNone}"
                 }
             ],
             Upgrade.A =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "RikaFlux",
-                    _stringInt = $"{_rikaFluxAmountA}"
+                    _stringString = "status.overdrive",
+                    _stringInt = $"{_overdriveAmountA}"
                 }
             ],
             Upgrade.B =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.libra",
-                    _stringInt = $"{_libraAmountB}"
+                    _stringString = "status.overdrive",
+                    _stringInt = $"{_overdriveAmountB}"
                 }
             ],
             _ => throw new ArgumentOutOfRangeException()
@@ -76,18 +78,18 @@ public class ShieldCurrent : Card, IRegisterable
     
     private static bool _isplaytester = ArtManager.IsPlayTester;
     private static bool _logALotOfThings = ArtManager.LogALotOfThings;
-    
+
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
         {
-            CardName = "Shield Current"
+            CardName = "Power Boost"
         });*/
         
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
         _calculation++;
         ModEntry.Instance.Helper.ModData.SetModData(s, "rikaCardsPerTurnNumber", _calculation);
-        
+
         if (s.ship.Get(ModEntry.Instance.Rikamissing.Status) == 0)
         {
             if (upgrade == Upgrade.None)
@@ -98,41 +100,58 @@ public class ShieldCurrent : Card, IRegisterable
                 });
                 c.Queue(new AStatus
                 {
-                    status = RikaFluxManager.RikaFlux.Status,
-                    statusAmount = 1,
+                    status = Status.overdrive,
+                    statusAmount = _overdriveAmountNone,
                     targetPlayer = true
                 });
+                c.Queue(new PowerGainOrPowerBoostJankFix
+                {
+                    Cardname = "PowerBoost",
+                    Statusamount = 1
+                });
             }
+
             if (upgrade == Upgrade.A)
             {
                 c.Queue(new AStatus
                 {
-                    status = RikaFluxManager.RikaFlux.Status,
-                    statusAmount = 1,
+                    status = Status.overdrive,
+                    statusAmount = _overdriveAmountA,
                     targetPlayer = true
                 });
+                c.Queue(new PowerGainOrPowerBoostJankFix
+                {
+                    Cardname = "PowerBoost",
+                    Statusamount = 1
+                });
             }
+
             if (upgrade == Upgrade.B)
             {
                 c.Queue(new RikaEnergyCost
                 {
-                    cardCost = 1
+                    cardCost = 2
                 });
                 c.Queue(new AStatus
                 {
-                    status = Status.libra,
-                    statusAmount = 1,
+                    status = Status.overdrive,
+                    statusAmount = _overdriveAmountB,
                     targetPlayer = true
+                });
+                c.Queue(new PowerGainOrPowerBoostJankFix
+                {
+                    Cardname = "PowerBoost",
+                    Statusamount = 2
                 });
             }
         }
         if (_isplaytester)
         {
-            Console.WriteLine($"[RikaMod] Shield Current drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+            Console.WriteLine($"[RikaMod] Power Boost Expirenment 1 drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
         }
         if (_logALotOfThings)
         {
-            ModEntry.Instance.Logger.LogInformation($"[RikaMod: ShieldCurrent.cs] Shield Current drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: PowerBoost.cs] Power Boost Expirenment 1 drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
     }
 
@@ -148,8 +167,10 @@ public class ShieldCurrent : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
-                    artTint = "ffffff"
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_overdriveAmountNone} <c=status>overdrive</c>.",
+                    artTint = "ffffff",
+                    retain = true,
+                    unplayable = true
                 };
             }
             if (upgrade == Upgrade.A)
@@ -157,18 +178,22 @@ public class ShieldCurrent : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
-                    artTint = "ffffff"
+                    description = $"On draw, gain {_overdriveAmountA} <c=status>overdrive</c>.",
+                    artTint = "ffffff",
+                    retain = true,
+                    unplayable = true
                 };
             }
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_libraAmountB} <c=status>flux</c>.",
+                    cost = 2,
+                    description = $"On draw, <c=downside>-2 energy</c> but gain {_overdriveAmountB} <c=status>overdrive</c>.",
                     artTint = "ffffff",
-                    art = ShieldCurrentB
+                    art = PowerBoostB,
+                    retain = true,
+                    unplayable = true
                 };
             }
         }
@@ -179,9 +204,11 @@ public class ShieldCurrent : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_overdriveAmountNone} <c=status>overdrive</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Flux
+                    art = StableSpr.cards_Overdrive,
+                    retain = true,
+                    unplayable = true
                 };
             }
             if (upgrade == Upgrade.A)
@@ -189,21 +216,25 @@ public class ShieldCurrent : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = $"On draw, gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
+                    description = $"On draw, gain {_overdriveAmountA} <c=status>overdrive</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Flux
+                    art = StableSpr.cards_Overdrive,
+                    retain = true,
+                    unplayable = true
                 };
             }
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_libraAmountB} <c=status>flux</c>.",
+                    cost = 2,
+                    description = $"On draw, <c=downside>-2 energy</c> but gain {_overdriveAmountB} <c=status>overdrive</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Flux
+                    art = StableSpr.cards_Overpower,
+                    retain = true,
+                    unplayable = true
                 };
-            }  
+            }
         }
         return default;
     }

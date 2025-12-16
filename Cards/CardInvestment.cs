@@ -40,21 +40,37 @@ public class CardInvestment : Card, IRegisterable
         });
     }
     
+    private int _darwNextTurnAmountNone = 4;
+    private int _darwNextTurnAmountA = 4;
+    private int _darwNextTurnAmountB = 5;
+    
     public override List<CardAction> GetActions(State s, Combat c)
     {
         return upgrade switch
         {
             Upgrade.None =>
             [
-                new ToolTipAStatusDrawNextTurn2()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.drawNextTurn",
+                    _stringInt = $"{_darwNextTurnAmountNone}"
+                }
             ],
             Upgrade.A =>
             [
-                new ToolTipAStatusDrawNextTurn2()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.drawNextTurn",
+                    _stringInt = $"{_darwNextTurnAmountA}"
+                }
             ],
             Upgrade.B =>
             [
-                new ToolTipAStatusDrawNextTurn3()
+                new ToolTipCompitent
+                {
+                    _stringString = "status.drawNextTurn",
+                    _stringInt = $"{_darwNextTurnAmountB}"
+                }
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
@@ -86,7 +102,7 @@ public class CardInvestment : Card, IRegisterable
                 c.Queue(new AStatus
                 {
                     status = Status.drawNextTurn,
-                    statusAmount = 2,
+                    statusAmount = _darwNextTurnAmountNone,
                     targetPlayer = true
                 });
             }
@@ -96,7 +112,7 @@ public class CardInvestment : Card, IRegisterable
                 c.Queue(new AStatus
                 {
                     status = Status.drawNextTurn,
-                    statusAmount = 2,
+                    statusAmount = _darwNextTurnAmountA,
                     targetPlayer = true
                 });
             }
@@ -110,7 +126,7 @@ public class CardInvestment : Card, IRegisterable
                 c.Queue(new AStatus
                 {
                     status = Status.drawNextTurn,
-                    statusAmount = 3,
+                    statusAmount = _darwNextTurnAmountB,
                     targetPlayer = true
                 });
             }
@@ -137,7 +153,7 @@ public class CardInvestment : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>draw next turn</c>.",
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_darwNextTurnAmountNone} <c=status>draw next turn</c>.",
                     artTint = "ffffff"
                 };
             }
@@ -146,7 +162,7 @@ public class CardInvestment : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 2 <c=status>draw next turn</c>.",
+                    description = $"On draw, gain {_darwNextTurnAmountA} <c=status>draw next turn</c>.",
                     artTint = "ffffff"
                 };
             }
@@ -155,7 +171,7 @@ public class CardInvestment : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 3 <c=status>draw next turn</c>.",
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_darwNextTurnAmountB} <c=status>draw next turn</c>.",
                     artTint = "ffffff",
                     art = CardInvestmentB
                 };
@@ -168,7 +184,7 @@ public class CardInvestment : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>draw next turn</c>.",
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_darwNextTurnAmountNone} <c=status>draw next turn</c>.",
                     artTint = _artTintDefault,
                     art = CardInvestmentV2
                 };
@@ -178,7 +194,7 @@ public class CardInvestment : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 2 <c=status>draw next turn</c>.",
+                    description = $"On draw, gain {_darwNextTurnAmountA} <c=status>draw next turn</c>.",
                     artTint = _artTintDefault,
                     art = CardInvestmentV2
                 };
@@ -188,7 +204,7 @@ public class CardInvestment : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 3 <c=status>draw next turn</c>.",
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_darwNextTurnAmountB} <c=status>draw next turn</c>.",
                     artTint = _artTintDefault,
                     art = CardInvestmentV2
                 };

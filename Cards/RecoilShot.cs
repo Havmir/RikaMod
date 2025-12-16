@@ -9,19 +9,14 @@ using RikaMod.Features;
 
 namespace RikaMod.Cards;
 
-public class PowerBoost : Card, IRegisterable
+public class RecoilShot : Card, IRegisterable
 {
     private int _calculation;
-
-    public static Spr PowerBoostAlphaSprite;
-    public static Spr PowerBoostBAlphaSprite;
-    public static Spr PowerBoostB;
     
     public static void
         Register(IPluginPackage<IModManifest> package,
             IModHelper helper)
     {
-        PowerBoostB = PowerBoostBAlphaSprite;
         
         helper.Content.Cards.RegisterCard(new CardConfiguration
         {
@@ -30,15 +25,21 @@ public class PowerBoost : Card, IRegisterable
             {
                 deck = ModEntry.Instance.RikaDeck
                     .Deck,
-                rarity = Rarity.common,
+                rarity = Rarity.uncommon,
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "PowerBoost", "name"])
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "RecoilShot", "name"])
                 .Localize,
-            Art = PowerBoostAlphaSprite
         });
     }
+    
+    private int _damageNone = 2;
+    private int _damageA = 3;
+    private int _damageB = 5;
+    private int _drawLessNextTurnNone = 1;
+    private int _drawLessNextTurnA = 1;
+    private int _drawLessNextTurnB = 2;
     
     public override List<CardAction> GetActions(State s, Combat c)
     {
@@ -48,29 +49,36 @@ public class PowerBoost : Card, IRegisterable
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.powerDrive",
-                    _stringInt = "1"
+                    _stringString = "action.attackPiercing"
+                },
+                new ToolTipCompitent
+                {
+                    _stringString = "status.drawLessNextTurn",
+                    _stringInt = $"{_drawLessNextTurnNone}"
                 }
             ],
             Upgrade.A =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.powerDrive",
-                    _stringInt = "1"
+                    _stringString = "action.attackPiercing"
+                },
+                new ToolTipCompitent
+                {
+                    _stringString = "status.drawLessNextTurn",
+                    _stringInt = $"{_drawLessNextTurnA}"
                 }
             ],
             Upgrade.B =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.powerDrive",
-                    _stringInt = "2"
+                    _stringString = "action.attackPiercing"
                 },
                 new ToolTipCompitent
                 {
-                    _stringString = "status.energyLessNextTurn",
-                    _stringInt = "2"
+                    _stringString = "status.drawLessNextTurn",
+                    _stringInt = $"{_drawLessNextTurnB}"
                 }
             ],
             _ => throw new ArgumentOutOfRangeException()
@@ -79,12 +87,12 @@ public class PowerBoost : Card, IRegisterable
     
     private static bool _isplaytester = ArtManager.IsPlayTester;
     private static bool _logALotOfThings = ArtManager.LogALotOfThings;
-
+    
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
         {
-            CardName = "Power Boost"
+            CardName = "Recoil Shot"
         });*/
         
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
@@ -95,65 +103,61 @@ public class PowerBoost : Card, IRegisterable
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new RikaEnergyCost
+                c.Queue(new AAttack
                 {
-                    cardCost = 1
+                    damage = GetDmg(s, _damageNone),
+                    fast = true,
+                    piercing = true
                 });
                 c.Queue(new AStatus
                 {
-                    status = Status.overdrive,
-                    statusAmount = 1,
+                    status = Status.drawLessNextTurn,
+                    statusAmount = _drawLessNextTurnNone,
                     targetPlayer = true
-                });
-                c.Queue(new PowerGainOrPowerBoostJankFix
-                {
-                    Cardname = "PowerBoost",
-                    Statusamount = 1
                 });
             }
 
             if (upgrade == Upgrade.A)
             {
+                c.Queue(new AAttack
+                {
+                    damage = GetDmg(s, _damageA),
+                    fast = true,
+                    piercing = true
+                });
                 c.Queue(new AStatus
                 {
-                    status = Status.overdrive,
-                    statusAmount = 1,
+                    status = Status.drawLessNextTurn,
+                    statusAmount = _drawLessNextTurnA,
                     targetPlayer = true
-                });
-                c.Queue(new PowerGainOrPowerBoostJankFix
-                {
-                    Cardname = "PowerBoost",
-                    Statusamount = 1
                 });
             }
 
             if (upgrade == Upgrade.B)
             {
-                c.Queue(new RikaEnergyCost
+                c.Queue(new AAttack
                 {
-                    cardCost = 1
+                    damage = GetDmg(s, _damageB),
+                    fast = true,
+                    piercing = true
                 });
                 c.Queue(new AStatus
                 {
-                    status = Status.overdrive,
-                    statusAmount = 2,
+                    status = Status.drawLessNextTurn,
+                    statusAmount = _drawLessNextTurnB,
                     targetPlayer = true
-                });
-                c.Queue(new PowerGainOrPowerBoostJankFix
-                {
-                    Cardname = "PowerBoost",
-                    Statusamount = 2
                 });
             }
         }
         if (_isplaytester)
         {
-            Console.WriteLine($"[RikaMod] Power Boost drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+            Console.WriteLine($"[RikaMod] Spare Shot drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
         }
         if (_logALotOfThings)
         {
-            ModEntry.Instance.Logger.LogInformation($"[RikaMod: PowerBoost.cs] Power Boost drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: Spareshot.cs] Spare Shot drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
         }
+
     }
 
     private int _artmode = ArtManager.ArtNumber;
@@ -168,17 +172,19 @@ public class PowerBoost : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 1 <c=status>overdrive</c>.",
-                    artTint = "ffffff"
+                    description = $"On draw, <c=downside>-1 energy & gain 1</c> <c=status>Draw Less Next Turn</c> but attack for <c=redd>{GetDmg(state, _damageNone)}</c> damage with <c=keyword>piercing</c>.",
+                    artTint = "ffffff",
+                    exhaust = true
                 };
             }
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 0,
-                    description = "On draw, gain 1 <c=status>overdrive</c>.",
-                    artTint = "ffffff"
+                    cost = 1,
+                    description = $"On draw, <c=downside>-1 energy & gain 1</c> <c=status>Draw Less Next Turn</c> but attack for <c=redd>{GetDmg(state, _damageA)}</c> damage with <c=keyword>piercing</c>.",
+                    artTint = "ffffff",
+                    exhaust = true
                 };
             }
             if (upgrade == Upgrade.B)
@@ -186,9 +192,9 @@ public class PowerBoost : Card, IRegisterable
                 return new CardData
                 {
                     cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>overdrive</c>.",
+                    description = $"On draw, <c=downside>-1 energy & gain 1</c> <c=status>Draw Less Next Turn</c> but attack for <c=redd>{GetDmg(state, _damageB)}</c> damage with <c=keyword>piercing</c>.",
                     artTint = "ffffff",
-                    art = PowerBoostB
+                    exhaust = true
                 };
             }
         }
@@ -198,10 +204,11 @@ public class PowerBoost : Card, IRegisterable
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 1 <c=status>overdrive</c>.",
+                    cost = 0,
+                    description = $"On draw, <c=downside>gain {_drawLessNextTurnNone}</c> <c=status>draw less next turn</c> but attack for <c=redd>{GetDmg(state, _damageNone)}</c> <c=keyword>pierce</c> dmg.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Overdrive
+                    art = StableSpr.cards_Cannon,
+                    exhaust = true
                 };
             }
             if (upgrade == Upgrade.A)
@@ -209,19 +216,21 @@ public class PowerBoost : Card, IRegisterable
                 return new CardData
                 {
                     cost = 0,
-                    description = "On draw, gain 1 <c=status>overdrive</c>.",
+                    description = $"On draw, <c=downside>gain {_drawLessNextTurnA}</c> <c=status>draw less next turn</c> but attack for <c=redd>{GetDmg(state, _damageA)}</c> <c=keyword>pierce</c> dmg.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Overdrive
+                    art = StableSpr.cards_Cannon,
+                    exhaust = true
                 };
             }
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>overdrive</c>.",
+                    cost = 0,
+                    description = $"On draw, <c=downside>gain {_drawLessNextTurnB}</c> <c=status>draw less next turn</c> but attack for <c=redd>{GetDmg(state, _damageB)}</c> <c=keyword>pierce</c> dmg.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Overpower
+                    art = StableSpr.cards_Cannon,
+                    exhaust = true
                 };
             }
         }
