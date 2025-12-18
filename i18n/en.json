@@ -22,7 +22,7 @@
             "desc": "Draw {0} cards when you move. <c=downside>Lose this status at the end of your turn.</c>"
         },
         "Kiteing": {
-            "name": "Kiteing",
+            "name": "Temp Strafe",
             "desc": "Attack for <c=keyword>{0}</c> damage each time you move, but if you have strafe, this damage is added to strafe's attack instead. <c=downside>Lose this status at the end of your turn.</c>"
         },
         "TempStrafe": {

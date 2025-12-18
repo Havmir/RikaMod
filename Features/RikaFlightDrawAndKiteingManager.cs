@@ -22,11 +22,11 @@ public class RikaFlightDrawAndKiteingManager : IKokoroApi.IV2.IStatusLogicApi.IH
     public RikaFlightDrawAndKiteingManager()
     {
         ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
-        //Harmony.DEBUG = true; //~ readd this if Harmony is being weird (only readd for your end though) Havmir 08/08/2025
-        ModEntry.Instance.Logger.LogInformation("Please let Havmir know that Harmony.DEBUG was left on in RikaFlightDrawAndKiteingManager.");
+        // Harmony.DEBUG = true; //~ readd this if Harmony is being weird (only readd for your end though) Havmir 08/08/2025
+        // ModEntry.Instance.Logger.LogInformation("Please let Havmir know that Harmony.DEBUG was left on in RikaFlightDrawAndKiteingManager.");
         ModEntry.Instance.Helper.Utilities.Harmony.Patch(
             original: AccessTools.DeclaredMethod(typeof(AMove), nameof(AMove.Begin)), 
-            transpiler: new HarmonyMethod(GetType(), nameof(AMovePatch)) {priority = Priority.VeryLow});
+            transpiler: new HarmonyMethod(GetType(), nameof(AMovePatch)) {priority = Priority.Low});
     }
     
     private static void HavmirsRikaFlightDrawCustomFunction(Ship ship, Combat combat)
