@@ -1,3 +1,13 @@
+0.3.4-Beta Changelog:
+
+Rika's manager for temp strafe and flight draw had its priority changed from very low to normal to fix an issue with another different mod.
+
+0.3.3-Beta Changelog:
+
+Rika's manager for temp strafe and flight draw had its priority changed from very low to low to fix an issue with another mod. (I also turned off the logger for that file as well)
+
+Temp strafe is now called temp strafe instead of kiteing.
+
 0.3.2-Beta Changelog:
 
 The manager for the temp strafe and flight draw status should have very low priority to help with conflicts with other mods.
