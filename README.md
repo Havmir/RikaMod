@@ -1,3 +1,7 @@
+0.3.5-Beta Changelog:
+
+"_isplaytester" is now set to false in ArtManager
+
 0.3.4-Beta Changelog:
 
 Rika's manager for temp strafe and flight draw had its priority changed from very low to normal to fix an issue with another different mod.
