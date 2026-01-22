@@ -19,7 +19,7 @@
         },
         "RikaFlightDraw": {
             "name": "Flight Draw",
-            "desc": "Draw {0} cards when you move. <c=downside>Lose this status at the end of your turn.</c>"
+            "desc": "Draw <c=keyword>{0}</c> cards when you move. <c=downside>Lose this status at the end of your turn.</c>"
         },
         "Kiteing": {
             "name": "Temp Strafe",
@@ -31,6 +31,40 @@
         }
     },
     "action": {
+        "FalseIconAAtack": {
+            "title": "Attack",
+            "titlePeirce": "Pirecing Attack",
+            "descPeirce": "Ignores all shields and armor."
+        },
+        "FalseIconAMove": {
+            "titleLeft": "Move Left",
+            "titleZero": "Error",
+            "titleRight": "Move Right",
+            "descLeft": "Instantly move <c=keyword>{0}</c> spaces to the <c=keyword>LEFT</c>.",
+            "descZero": "Please Inform Havmir that FalseIconAMove.cs had a 0 get returend, which was unexpected. _moveNumber = {0}",
+            "descRight": "Instantly move <c=keyword>{0}</c> spaces to the <c=keyword>RIGHT</c>.",
+            "titleRandom": "Move Random",
+            "descRandom": "Instantly move <c=keyword>{0}</c> spaces in a random direction."
+        },
+        "RikaEnergyCost": {
+            "title": "Rika Card",
+            "descNotFree": "Upon drawing this card, <c=downside>you will lose energy (</c><c=keyword>{0}</c><c=downside>) equal to the base cost of this card</c> and all effects of this card will happen at once. <c=downside>No actions are taken when this card is played.</c>",
+            "descFree": "Upon drawing this card, all effects of this card will happen at once. <c=downside>No actions are taken when this card is played.</c>"
+        },
+        "FalseIconAStatus": {
+            "titleShield": "Shield",
+            "descShield": "Block up to <c=keyword>{0}</c> incoming damage. Capped by max shield.",
+            "titleTempShield": "Temp Shield",
+            "descTempShield": "Block up to <c=keyword>{0}</c> incoming damage. <c=downside>Goes away at start of turn.</c>",
+            "titleLibra": "Flux",
+            "descLibra": "Whenever this ship attacks, it gain <c=keyword>{0}</c> <c=status>TEMP SHIELD</c>. <c=downside>Decreases by 1 at end of turn.</c>",
+            "titleAutopilot": "Autopilot",
+            "descAutopilot": "Immediately after you play <c=action>the leftmost/rightmost card in your hand</c>, move left/right <c=keyword>{0}</c>. <c=downside>Lose this at the end of your turn.</c>"
+        },
+        "FalseIconAAddCard": {
+            "titleAddCardDeck": "Add A Card",
+            "descAddCardDeck": "Add a card to your <c=white>draw pile</c>."
+        }
     },
     "card": {
         "SpareShot": {
@@ -58,7 +92,7 @@
             "name": "Energy Investment"
         },
         "CardInvestment": {
-            "name": "Card Investment"
+            "name": "Card Invest"
         },
         "BarrelRoll": {
             "name": "Barrel Roll"
@@ -155,6 +189,15 @@
         },
         "AdjustGameplan": {
             "name": "Adjust Gameplan"
+        },
+        "EvadeBooster": {
+            "name": "Evade Booster"
+        },
+        "SinghShot": {
+            "name": "Sling Shot"
+        },
+        "Swoop": {
+            "name": "Swoop"
         }
     },
     "artifact": {
@@ -164,7 +207,7 @@
         },
         "CardRotate": {
             "name": "CARD ROTATE",
-            "desc": "At the start of your turn, discard 2 random cards then draw 2 cards."
+            "desc": "At the start of your turn, discard 1 random card then draw 1 card."
         },
         "RandomUSB": {
             "name": "SKETCHY USB",
@@ -182,6 +225,12 @@
         "BoostedDeck": {
             "name" : "BOOSTED DECK",
             "desc" : "Gain 1 <c=status>BOOST</c> whenever you shuffle your deck."
+        }
+    },
+    "cardTrait": {
+        "RikasTrait": {
+            "name": "Rapid",
+            "desc": "Upon drawing this card, <c=downside>you will lose energy equal to the base cost of this card</c> and all actions of this card will happen at once. <c=downside>No actions are taken when this card is played.</c>"
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using RikaMod.Actions;
 using RikaMod.Artifacts;
 using RikaMod.Cards;
+using RikaMod.Cards.NeoCards;
 using RikaMod.External;
 using RikaMod.Features;
 using TheJazMaster.MoreDifficulties;
@@ -33,56 +34,75 @@ internal class ModEntry : SimpleMod
     
     private int _artmode = ArtManager.ArtNumber;
     
-    /*
-     * The following lists contain references to all types that will be registered to the game.
-     * All cards and artifacts must be registered before they may be used in the game.
-     * In theory only one collection could be used, containing all registrable types, but it is seperated this way for ease of organization.
-     */
     private static List<Type> _rikaCommonCardTypes = [
-        typeof(SpareShot),
-        typeof(ShieldCurrent),
-        typeof(QuickDodge),
+        // typeof(SpareShot),
+        // typeof(ShieldCurrent),
+        // typeof(QuickDodge),
         // typeof(QuickShift), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
-        typeof(QuickBlock), //~ Shield Flow already does what QuickBlock does, just better 90% of the time and this card isn't that good on it's own to begin with, so I'm replacing it with other better cards.
+        // typeof(QuickBlock), //~ Shield Flow already does what QuickBlock does, just better 90% of the time and this card isn't that good on it's own to begin with, so I'm replacing it with other better cards.
         // typeof(CardSwap) ~ this was a little too niche,
-        typeof(PowerBoost),
-        typeof(CardInvestment),
+        // typeof(PowerBoost),
+        // typeof(CardInvestment),
         // typeof(PeircingShots), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
-        //typeof(BorrowCards), ~ it was never really good or useful anywhere
-        typeof(Tailwind),
-        typeof(Dive),
-        //typeof(EmergencyShield),
-        typeof(QuickEnergy),
-        typeof(PowerBoostExpirement1)
+        // typeof(BorrowCards), ~ it was never really good or useful anywhere
+        // typeof(Tailwind),
+        // typeof(Dive),
+        // typeof(EmergencyShield),
+        // typeof(QuickEnergy),
+        // typeof(PowerBoostExpirement1),
+        typeof(NeoDive),
+        // typeof(NeoCardInvestment),
+        typeof(NeoPowerBoost),
+        typeof(NeoQuickBlock),
+        typeof(NeoQuickDodge),
+        typeof(NeoQuickEnergy),
+        typeof(NeoShieldCurrent),
+        typeof(NeoSpareShot),
+        typeof(NeoTailwind),
+        // typeof(NeoSinghShot) ~~ I feel like this needs to be better made, so I swaped it out with NeoSwoop instead for the V0.4.0 update Havmir ~ 21/01/2026
+        typeof(NeoSwoop)
     ];
     private static List<Type> _rikaUncommonCardTypes = [
-        typeof(BarrelRoll),
+        // typeof(BarrelRoll),
         // typeof(ParallelStasis),scrapped for easily killing off the player ~ Havmir 22/06/20225
         // typeof(CardToEnergy),  ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
-        typeof(WhaWhy),
-        typeof(Haste),
+        // typeof(WhaWhy),
+        // typeof(Haste),
         // typeof(EnergyInvestment), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
         // typeof(RollAway), ~ Cut in the 0.3.1 update as it wasn't ever really a good pull to grab. 14/12/2025 Havmir
         // typeof(ShieldDraw), ~ Due to how artifacts work on the first turn, this card is bugged ~ 17/11/2025 Havmir
-        typeof(Recast),
-        typeof(FlightDraw),
+        // typeof(Recast),
+        // typeof(FlightDraw),
         // typeof(FumeShot) ~ Too much worse compared to Peri's Frontloaded Blast ~ 12/12/2025 Havmir
-        typeof(RecoilShot),
-        typeof(RushDown)
+        // typeof(RecoilShot),
+        // typeof(RushDown),
+        typeof(NeoBarrelRoll),
+        typeof(NeoFlightDraw),
+        typeof(NeoHaste),
+        typeof(NeoRecast),
+        typeof(NeoRecoilShot),
+        typeof(NeoRushDown),
+        typeof(NeoKiteing),
     ];
     private static List<Type> _rikaRareCardTypes = [
-        typeof(PowerGain),
-        typeof(ReplaceHand),
+        // typeof(PowerGain),
+        // typeof(ReplaceHand),
         // typeof(RapidAttack),
         // typeof(StatusInvestment), ~ I never picked this card when play testing & I believe it to be overly weak.
         // typeof(TradeBlows), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
         // typeof(Blitz), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
         // typeof(CorrosionShot), ~ Scarped for the 0.2.3 update to make Rika have a more coheisive deck ~ 01/08/2025 Havmir
-        typeof(Kiteing),
+        // typeof(Kiteing),
         // typeof(JetStream), ~ Too much free energy, so it got scraped in favor of Aggressive Gamble ~ 12/12/2025 Havmir
         // typeof(StatusUpdraft), ~ getting boost from this card was being iffy in terms of gameplay ~ 15/12/2025 Havmir
-        typeof(AggressiveGamble),
-        typeof(AdjustGameplan)
+        // typeof(AggressiveGamble),
+        // typeof(AdjustGameplan)
+        typeof(NeoAdjustGameplan),
+        // typeof(NeoAggressiveGamble), ~ I really liked how recycle and retain interacted with each other, but I couldn't think of a good card that suited this effect short of maybe making a custom token(s) to make the card good. ~ Havmir 18/01/2026
+        typeof(NeoPowerGain),
+        typeof(NeoReplaceHand),
+        typeof(NeoEvadeBooster),
+        typeof(NeoWhaWhy)
     ];
     private static List<Type> _rikaSpecialCardTypes = [
         typeof(ColorlessRikaSummon)
@@ -127,7 +147,7 @@ internal class ModEntry : SimpleMod
             new CurrentLocaleOrEnglishLocalizationProvider<IReadOnlyList<string>>(AnyLocalizations)
         );
 
-        if (_artmode == 1)
+        if (_artmode == 1 || _artmode == 2)
         {
             RikaDeck = helper.Content.Decks.RegisterDeck("Rika", new DeckConfiguration
             {
@@ -242,8 +262,11 @@ internal class ModEntry : SimpleMod
         ToolTipCompitent.RikaEnergyIcon = rikaEnergyicon.Sprite;
         ToolTipCompitent.RikaFlightDrawIcon = rikaFlightDrawicon.Sprite;
         ToolTipCompitent.RikaFluxIcon = rikaFluxicon.Sprite;
+        FalseIconAStatus.RikaFluxIcon = rikaFluxicon.Sprite;
+        FalseIconAStatus.RikaFlightDrawIcon = rikaFlightDrawicon.Sprite;
+        FalseIconAStatus.RikaKiteingicon = rikaKiteingicon.Sprite;
         
-        ISpriteEntry rikasTraiticon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/TikasTraitIcon.png")); 
+        ISpriteEntry rikasTraiticon = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/EnergyBall.png")); 
         RikasTrait = helper.Content.Cards.RegisterTrait("RikasTrait", new()
         {
             Name = AnyLocalizations.Bind(["cardtrait", "RikasTrait", "name"]).Localize,
@@ -293,7 +316,7 @@ internal class ModEntry : SimpleMod
             ]
         });
 
-        if (_artmode == 1)
+        if (_artmode == 1 || _artmode == 2)
         {
             Rikachar = helper.Content.Characters.V2.RegisterPlayableCharacter("Rika", new PlayableCharacterConfigurationV2
             {
@@ -302,8 +325,8 @@ internal class ModEntry : SimpleMod
                 Starters = new StarterDeck
                 {
                     cards = [
-                        new SpareShot(),
-                        new QuickDodge()
+                        new NeoSpareShot(),
+                        new NeoQuickDodge()
                     ]
                 },
                 Description = AnyLocalizations.Bind(["character", "desc"]).Localize,
@@ -311,12 +334,12 @@ internal class ModEntry : SimpleMod
                 SoloStarters = new StarterDeck
                 {
                     cards = [
-                        new SpareShot(),
-                        new QuickDodge(),
-                        new Dive(),
-                        new PowerBoost(),
-                        new ShieldCurrent(),
-                        new Tailwind()
+                        new NeoSpareShot(),
+                        new NeoQuickDodge(),
+                        new NeoDive(),
+                        new NeoPowerBoost(),
+                        new NeoQuickBlock(),
+                        new NeoTailwind()
                     ]
                 }
             });
@@ -330,8 +353,8 @@ internal class ModEntry : SimpleMod
                 Starters = new StarterDeck
                 {
                     cards = [
-                        new SpareShot(),
-                        new QuickDodge()
+                        new NeoSpareShot(),
+                        new NeoQuickDodge()
                     ]
                 },
                 Description = AnyLocalizations.Bind(["character", "desc"]).Localize,
@@ -339,12 +362,12 @@ internal class ModEntry : SimpleMod
                 SoloStarters = new StarterDeck
                 {
                     cards = [
-                        new SpareShot(),
-                        new QuickDodge(),
-                        new Dive(),
-                        new PowerBoost(),
-                        new ShieldCurrent(),
-                        new Tailwind()
+                        new NeoSpareShot(),
+                        new NeoQuickDodge(),
+                        new NeoDive(),
+                        new NeoPowerBoost(),
+                        new NeoQuickBlock(),
+                        new NeoTailwind()
                     ]
                 }
             });
@@ -353,8 +376,8 @@ internal class ModEntry : SimpleMod
         MoreDifficultiesApi?.RegisterAltStarters(RikaDeck.Deck, new StarterDeck
         {
             cards = [
-                new Dive(),
-                new ShieldCurrent()
+                new NeoDive(),
+                new NeoQuickBlock()
             ]
         });
         
@@ -369,6 +392,8 @@ internal class ModEntry : SimpleMod
         var statusUpdraftCardBackgroundSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Card/StatusUpdraftCardArt.png"));
         var powerBoostAlphaSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Alpha/Card/PowerBoost.png"));
         var powerBoostBAlphaSprite = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Alpha/Card/PowerBoostB.png"));
+        var energyBallSprite = rikasTraiticon;
+        var tempPlaceHolderArt = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("assets/Alpha/Card/Unused/BadToothCard.png"));
         Dive.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
         ShieldDraw.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
         EmergencyShield.RedTrashFumesBackgroundSprite = redTrashFumesBackground.Sprite;
@@ -379,6 +404,31 @@ internal class ModEntry : SimpleMod
         StatusUpdraft.StatusUpdraftCardBackgroundSprite = statusUpdraftCardBackgroundSprite.Sprite;
         PowerBoost.PowerBoostAlphaSprite = powerBoostAlphaSprite.Sprite;
         PowerBoost.PowerBoostBAlphaSprite = powerBoostAlphaSprite.Sprite;
+        RikaEnergyCost.EnergyBallSprite = energyBallSprite.Sprite;
+        FalseIconRikaCard.EnergyBallSprite = energyBallSprite.Sprite;
+        NeoDive.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoAdjustGameplan.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoAggressiveGamble.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoBarrelRoll.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoCardInvestment.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoFlightDraw.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoHaste.TempPlaceHolderArt =  tempPlaceHolderArt.Sprite;
+        NeoKiteing.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoKiteing.KiteingCardBackgroundSprite = kiteingCardBackgroundSprite.Sprite;
+        NeoPowerBoost.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoPowerGain.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoQuickBlock.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoQuickDodge.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoQuickEnergy.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoRecast.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoRecoilShot.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoRushDown.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoShieldCurrent.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoSpareShot.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoTailwind.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoEvadeBooster.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoSinghShot.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
+        NeoSwoop.TempPlaceHolderArt = tempPlaceHolderArt.Sprite;
     }
     
 

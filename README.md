@@ -1,3 +1,27 @@
+0.4.0-Beta Changelog:
+
+Shield Current A is now honest with the amount of shield flow it gives
+
+We now have access to card traits now, thanks rft50 & VladIsSlav for your help on that
+
+Replace Hand has had some private ints swapped to public to allow for the rewind mod to work.
+
+We added a trait to each Icon
+
+Every prevouis card has been recoded and now lives in a new file. For these new cards, they have the same name as the old ones, just with "neo" in front of em.
+
+Haste had to be reverted due to using icons now
+
+Put the scrapped cards into the scrapped cards folder
+
+Card Rotate has a small delay now (1 second)
+
+Card Investment was cut laregly due to compition with tailwind
+
+Swoop, the card, was added as a replacement for Card Investment and should provide myself with data on how players & Rika interact with single use on cards
+
+
+
 0.3.5-Beta Changelog:
 
 "_isplaytester" is now set to false in ArtManager
