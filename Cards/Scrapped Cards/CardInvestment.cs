@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -8,14 +9,20 @@ using RikaMod.Features;
 
 namespace RikaMod.Cards;
 
-public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
+public class CardInvestment : Card, IRegisterable
 {
     private int _calculation;
+
+    public static Spr CardInvestmentB;
+    public static Spr CardInvestmentV2;
     
     public static void
         Register(IPluginPackage<IModManifest> package,
             IModHelper helper)
     {
+        CardInvestmentB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/CardInvestmentB.png").Sprite;
+        CardInvestmentV2 = ModEntry.RegisterSprite(package, "assets/Card/CardInvestmentV2.png").Sprite;
+        
         helper.Content.Cards.RegisterCard(new CardConfiguration
         {
             CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -27,11 +34,15 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "QuickBlock", "name"])
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "CardInvestment", "name"])
                 .Localize,
-            Art = StableSpr.cards_Dodge,
+            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/CardInvestment.png").Sprite
         });
     }
+    
+    private int _darwNextTurnAmountNone = 4;
+    private int _darwNextTurnAmountA = 4;
+    private int _darwNextTurnAmountB = 5;
     
     public override List<CardAction> GetActions(State s, Combat c)
     {
@@ -41,103 +52,95 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.tempShield",
-                    _stringInt = $"{_tempShieldAmountNone}"
+                    _stringString = "status.drawNextTurn",
+                    _stringInt = $"{_darwNextTurnAmountNone}"
                 }
             ],
             Upgrade.A =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.tempShield",
-                    _stringInt = $"{_tempShieldAmountA}"
+                    _stringString = "status.drawNextTurn",
+                    _stringInt = $"{_darwNextTurnAmountA}"
                 }
             ],
             Upgrade.B =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.tempShield",
-                    _stringInt = $"{_tempShieldAmountB}"
-                },
-                new ToolTipCompitent
-                {
-                    _stringString = "status.Shield",
-                    _stringInt = $"{_shieldAmountB}"
+                    _stringString = "status.drawNextTurn",
+                    _stringInt = $"{_darwNextTurnAmountB}"
                 }
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
     }
+    
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
 
-    private int _tempShieldAmountNone = 3;
-    private int _tempShieldAmountA = 4;
-    private int _tempShieldAmountB = 2;
-    private int _shieldAmountB = 2;
     
     public override void OnDraw(State s, Combat c)
     {
-        /*c.Queue(new AcknowledgeRikaCardDrawn
+        /* c.Queue(new AcknowledgeRikaCardDrawn
         {
-            CardName = "Quick Block"
+            CardName = "Card Investment"
         });*/
         
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
         _calculation++;
         ModEntry.Instance.Helper.ModData.SetModData(s, "rikaCardsPerTurnNumber", _calculation);
-
+        
         if (s.ship.Get(ModEntry.Instance.Rikamissing.Status) == 0)
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new AStatus
                 {
-                    status = Status.tempShield,
-                    statusAmount = _tempShieldAmountNone,
+                    status = Status.drawNextTurn,
+                    statusAmount = _darwNextTurnAmountNone,
                     targetPlayer = true
                 });
             }
 
             if (upgrade == Upgrade.A)
             {
-                c.Queue(new AEnergy
-                {
-                    changeAmount = -1
-                });
                 c.Queue(new AStatus
                 {
-                    status = Status.tempShield,
-                    statusAmount = _tempShieldAmountA,
+                    status = Status.drawNextTurn,
+                    statusAmount = _darwNextTurnAmountA,
                     targetPlayer = true
                 });
             }
 
             if (upgrade == Upgrade.B)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new AStatus
                 {
-                    status = Status.tempShield,
-                    statusAmount = _tempShieldAmountB,
-                    targetPlayer = true
-                });
-                c.Queue(new AStatus
-                {
-                    status = Status.shield,
-                    statusAmount = _shieldAmountB,
+                    status = Status.drawNextTurn,
+                    statusAmount = _darwNextTurnAmountB,
                     targetPlayer = true
                 });
             }
         }
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] CardInvestment drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: CardInvestment.cs] CardInvestment drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
+        }
     }
-    
+
     private int _artmode = ArtManager.ArtNumber;
     private string _artTintDefault = ArtManager.ModeDefaultArtTint;
     
@@ -150,25 +153,27 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountNone} <c=status>temp shield</c>."
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_darwNextTurnAmountNone} <c=status>draw next turn</c>.",
+                    artTint = "ffffff"
                 };
             }
-
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountA} <c=status>temp shield</c>."
+                    cost = 0,
+                    description = $"On draw, gain {_darwNextTurnAmountA} <c=status>draw next turn</c>.",
+                    artTint = "ffffff"
                 };
             }
-
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountB} <c=status>temp shield</c> & {_shieldAmountB} <c=status>shield</c>."
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_darwNextTurnAmountB} <c=status>draw next turn</c>.",
+                    artTint = "ffffff",
+                    art = CardInvestmentB
                 };
             }
         }
@@ -179,38 +184,32 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountNone} <c=status>temp shield</c>.",
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_darwNextTurnAmountNone} <c=status>draw next turn</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Shield
+                    art = CardInvestmentV2
                 };
             }
-
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountA} <c=status>temp shield</c>.",
+                    cost = 0,
+                    description = $"On draw, gain {_darwNextTurnAmountA} <c=status>draw next turn</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Shield
+                    art = CardInvestmentV2
                 };
             }
-
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountB} <c=status>temp shield</c> & {_shieldAmountB} <c=status>shield</c>.",
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_darwNextTurnAmountB} <c=status>draw next turn</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Shield
+                    art = CardInvestmentV2
                 };
             }
         }
         return default;
     }
-    
-    public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-        => new HashSet<ICardTraitEntry> { ModEntry.Instance.RikasTrait };
-    
 };

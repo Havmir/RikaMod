@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -8,14 +9,20 @@ using RikaMod.Features;
 
 namespace RikaMod.Cards;
 
-public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
+public class PowerBoost : Card, IRegisterable
 {
     private int _calculation;
+
+    public static Spr PowerBoostAlphaSprite;
+    public static Spr PowerBoostBAlphaSprite;
+    public static Spr PowerBoostB;
     
     public static void
         Register(IPluginPackage<IModManifest> package,
             IModHelper helper)
     {
+        PowerBoostB = PowerBoostBAlphaSprite;
+        
         helper.Content.Cards.RegisterCard(new CardConfiguration
         {
             CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -27,9 +34,9 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "QuickBlock", "name"])
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "PowerBoost", "name"])
                 .Localize,
-            Art = StableSpr.cards_Dodge,
+            Art = PowerBoostAlphaSprite
         });
     }
     
@@ -41,45 +48,43 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.tempShield",
-                    _stringInt = $"{_tempShieldAmountNone}"
+                    _stringString = "status.powerDrive",
+                    _stringInt = "1"
                 }
             ],
             Upgrade.A =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.tempShield",
-                    _stringInt = $"{_tempShieldAmountA}"
+                    _stringString = "status.powerDrive",
+                    _stringInt = "1"
                 }
             ],
             Upgrade.B =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.tempShield",
-                    _stringInt = $"{_tempShieldAmountB}"
+                    _stringString = "status.powerDrive",
+                    _stringInt = "2"
                 },
                 new ToolTipCompitent
                 {
-                    _stringString = "status.Shield",
-                    _stringInt = $"{_shieldAmountB}"
+                    _stringString = "status.energyLessNextTurn",
+                    _stringInt = "2"
                 }
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-
-    private int _tempShieldAmountNone = 3;
-    private int _tempShieldAmountA = 4;
-    private int _tempShieldAmountB = 2;
-    private int _shieldAmountB = 2;
     
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
+
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
         {
-            CardName = "Quick Block"
+            CardName = "Power Boost"
         });*/
         
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
@@ -90,54 +95,67 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new AStatus
                 {
-                    status = Status.tempShield,
-                    statusAmount = _tempShieldAmountNone,
+                    status = Status.overdrive,
+                    statusAmount = 1,
                     targetPlayer = true
+                });
+                c.Queue(new PowerGainOrPowerBoostJankFix
+                {
+                    Cardname = "PowerBoost",
+                    Statusamount = 1
                 });
             }
 
             if (upgrade == Upgrade.A)
             {
-                c.Queue(new AEnergy
-                {
-                    changeAmount = -1
-                });
                 c.Queue(new AStatus
                 {
-                    status = Status.tempShield,
-                    statusAmount = _tempShieldAmountA,
+                    status = Status.overdrive,
+                    statusAmount = 1,
                     targetPlayer = true
+                });
+                c.Queue(new PowerGainOrPowerBoostJankFix
+                {
+                    Cardname = "PowerBoost",
+                    Statusamount = 1
                 });
             }
 
             if (upgrade == Upgrade.B)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new AStatus
                 {
-                    status = Status.tempShield,
-                    statusAmount = _tempShieldAmountB,
+                    status = Status.overdrive,
+                    statusAmount = 2,
                     targetPlayer = true
                 });
-                c.Queue(new AStatus
+                c.Queue(new PowerGainOrPowerBoostJankFix
                 {
-                    status = Status.shield,
-                    statusAmount = _shieldAmountB,
-                    targetPlayer = true
+                    Cardname = "PowerBoost",
+                    Statusamount = 2
                 });
             }
         }
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] Power Boost drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: PowerBoost.cs] Power Boost drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
+        }
     }
-    
+
     private int _artmode = ArtManager.ArtNumber;
     private string _artTintDefault = ArtManager.ModeDefaultArtTint;
     
@@ -150,25 +168,27 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountNone} <c=status>temp shield</c>."
+                    description = "On draw, <c=downside>-1 energy</c> but gain 1 <c=status>overdrive</c>.",
+                    artTint = "ffffff"
                 };
             }
-
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountA} <c=status>temp shield</c>."
+                    cost = 0,
+                    description = "On draw, gain 1 <c=status>overdrive</c>.",
+                    artTint = "ffffff"
                 };
             }
-
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountB} <c=status>temp shield</c> & {_shieldAmountB} <c=status>shield</c>."
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>overdrive</c>.",
+                    artTint = "ffffff",
+                    art = PowerBoostB
                 };
             }
         }
@@ -179,38 +199,32 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountNone} <c=status>temp shield</c>.",
+                    description = "On draw, <c=downside>-1 energy</c> but gain 1 <c=status>overdrive</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Shield
+                    art = StableSpr.cards_Overdrive
                 };
             }
-
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountA} <c=status>temp shield</c>.",
+                    cost = 0,
+                    description = "On draw, gain 1 <c=status>overdrive</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Shield
+                    art = StableSpr.cards_Overdrive
                 };
             }
-
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountB} <c=status>temp shield</c> & {_shieldAmountB} <c=status>shield</c>.",
+                    description = "On draw, <c=downside>-1 energy</c> but gain 2 <c=status>overdrive</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Shield
+                    art = StableSpr.cards_Overpower
                 };
             }
         }
         return default;
     }
-    
-    public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-        => new HashSet<ICardTraitEntry> { ModEntry.Instance.RikasTrait };
-    
 };

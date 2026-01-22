@@ -3,9 +3,12 @@ namespace RikaMod.Features;
 
 public class ArtManager
 {
+    // 4 ~ defualt artwork + icons & an extra icon to show how the Rika card works
+    // 3 ~ defualt artwork + icons & the Rika Trait
+    // 2 ~ Alpha based artwork | doesn't work as of 04/01/2026 due to me not adding all the custom alpha artwork for this ... yet
     // 1 ~ Alpha based artwork | No longer works after 01/08/2025 due to me swapping out a lot of new cards and refusing to spend the time to make new artwork for each.
     // 0 ~ default artwork
-    private static int _artvalue; // DO NOT CHANGE FROM 0!
+    private static int _artvalue = 3;
     
     // This controls the artTint for the default artmode
     // Use 71b9f3 for a sky color
@@ -22,6 +25,12 @@ public class ArtManager
     // This is mostly used to switch if I am logging any artifact procs or card draws or not. Probally should set this to false when you release this.
     // Set to true if you want things log and set to fasle if you do not.
     private static bool _privatelogALotOfThings = false;
+
+    // This is for testing purposes. Should be set to false for final release.
+    private static bool _rikasTraitOverride = false;
+
+    // This was orginally added for my NeoEvadeBoosterJankFix to double check that everything was going smoothly and to see if any issues arised.
+    private static bool _logSomeExtraChecks = false;
     
     public static int ArtNumber
     {
@@ -51,5 +60,17 @@ public class ArtManager
     {
         get { return _privatelogALotOfThings; }
         set { _privatelogALotOfThings = value; }
+    }
+    
+    public static bool RikasTraitOverride
+    {
+        get { return _rikasTraitOverride; }
+        set { _rikasTraitOverride = value; }
+    }
+
+    public static bool ExtraCheckLog
+    {
+        get { return _logSomeExtraChecks; }
+        set { _logSomeExtraChecks = value; }
     }
 }

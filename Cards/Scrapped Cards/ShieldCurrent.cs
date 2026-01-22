@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using RikaMod.Actions;
@@ -8,14 +9,18 @@ using RikaMod.Features;
 
 namespace RikaMod.Cards;
 
-public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
+public class ShieldCurrent : Card, IRegisterable
 {
     private int _calculation;
+
+    public static Spr ShieldCurrentB;
     
     public static void
         Register(IPluginPackage<IModManifest> package,
             IModHelper helper)
     {
+        ShieldCurrentB = ModEntry.RegisterSprite(package, "assets/Alpha/Card/ShieldCurrentB.png").Sprite;
+        
         helper.Content.Cards.RegisterCard(new CardConfiguration
         {
             CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -27,11 +32,15 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
                 dontOffer = false,
                 upgradesTo = [Upgrade.A, Upgrade.B]
             },
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "QuickBlock", "name"])
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "ShieldCurrent", "name"])
                 .Localize,
-            Art = StableSpr.cards_Dodge,
+            Art = ModEntry.RegisterSprite(package, "assets/Alpha/Card/ShieldCurrent.png").Sprite
         });
     }
+
+    private int _rikaFluxAmountNone = 2;
+    private int _rikaFluxAmountA = 2;
+    private int _libraAmountB = 1;
     
     public override List<CardAction> GetActions(State s, Combat c)
     {
@@ -41,103 +50,92 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.tempShield",
-                    _stringInt = $"{_tempShieldAmountNone}"
+                    _stringString = "RikaFlux",
+                    _stringInt = $"{_rikaFluxAmountNone}"
                 }
             ],
             Upgrade.A =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.tempShield",
-                    _stringInt = $"{_tempShieldAmountA}"
+                    _stringString = "RikaFlux",
+                    _stringInt = $"{_rikaFluxAmountA}"
                 }
             ],
             Upgrade.B =>
             [
                 new ToolTipCompitent
                 {
-                    _stringString = "status.tempShield",
-                    _stringInt = $"{_tempShieldAmountB}"
-                },
-                new ToolTipCompitent
-                {
-                    _stringString = "status.Shield",
-                    _stringInt = $"{_shieldAmountB}"
+                    _stringString = "status.libra",
+                    _stringInt = $"{_libraAmountB}"
                 }
             ],
             _ => throw new ArgumentOutOfRangeException()
         };
     }
-
-    private int _tempShieldAmountNone = 3;
-    private int _tempShieldAmountA = 4;
-    private int _tempShieldAmountB = 2;
-    private int _shieldAmountB = 2;
+    
+    private static bool _isplaytester = ArtManager.IsPlayTester;
+    private static bool _logALotOfThings = ArtManager.LogALotOfThings;
     
     public override void OnDraw(State s, Combat c)
     {
         /*c.Queue(new AcknowledgeRikaCardDrawn
         {
-            CardName = "Quick Block"
+            CardName = "Shield Current"
         });*/
         
         _calculation = ModEntry.Instance.Helper.ModData.GetModDataOrDefault(s, "rikaCardsPerTurnNumber", 0);
         _calculation++;
         ModEntry.Instance.Helper.ModData.SetModData(s, "rikaCardsPerTurnNumber", _calculation);
-
+        
         if (s.ship.Get(ModEntry.Instance.Rikamissing.Status) == 0)
         {
             if (upgrade == Upgrade.None)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new AStatus
                 {
-                    status = Status.tempShield,
-                    statusAmount = _tempShieldAmountNone,
+                    status = RikaFluxManager.RikaFlux.Status,
+                    statusAmount = _rikaFluxAmountNone,
                     targetPlayer = true
                 });
             }
-
             if (upgrade == Upgrade.A)
             {
-                c.Queue(new AEnergy
-                {
-                    changeAmount = -1
-                });
                 c.Queue(new AStatus
                 {
-                    status = Status.tempShield,
-                    statusAmount = _tempShieldAmountA,
+                    status = RikaFluxManager.RikaFlux.Status,
+                    statusAmount = _rikaFluxAmountA,
                     targetPlayer = true
                 });
             }
-
             if (upgrade == Upgrade.B)
             {
-                c.Queue(new AEnergy
+                c.Queue(new RikaEnergyCost
                 {
-                    changeAmount = -1
+                    cardCost = 1
                 });
                 c.Queue(new AStatus
                 {
-                    status = Status.tempShield,
-                    statusAmount = _tempShieldAmountB,
-                    targetPlayer = true
-                });
-                c.Queue(new AStatus
-                {
-                    status = Status.shield,
-                    statusAmount = _shieldAmountB,
+                    status = Status.libra,
+                    statusAmount = _libraAmountB,
                     targetPlayer = true
                 });
             }
         }
+        if (_isplaytester)
+        {
+            Console.WriteLine($"[RikaMod] Shield Current drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)}");
+        }
+        if (_logALotOfThings)
+        {
+            ModEntry.Instance.Logger.LogInformation($"[RikaMod: ShieldCurrent.cs] Shield Current drawn | Upgrade: {upgrade} | Rikamissing.Status = {s.ship.Get(ModEntry.Instance.Rikamissing.Status)} | Turn: {c.turn}");
+        }
     }
-    
+
     private int _artmode = ArtManager.ArtNumber;
     private string _artTintDefault = ArtManager.ModeDefaultArtTint;
     
@@ -150,25 +148,27 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountNone} <c=status>temp shield</c>."
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
+                    artTint = "ffffff"
                 };
             }
-
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountA} <c=status>temp shield</c>."
+                    cost = 0,
+                    description = $"On draw, gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
+                    artTint = "ffffff"
                 };
             }
-
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountB} <c=status>temp shield</c> & {_shieldAmountB} <c=status>shield</c>."
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_libraAmountB} <c=status>flux</c>.",
+                    artTint = "ffffff",
+                    art = ShieldCurrentB
                 };
             }
         }
@@ -179,38 +179,32 @@ public class QuickBlock : Card, IRegisterable, IHasCustomCardTraits
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountNone} <c=status>temp shield</c>.",
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Shield
+                    art = StableSpr.cards_Flux
                 };
             }
-
             if (upgrade == Upgrade.A)
             {
                 return new CardData
                 {
-                    cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountA} <c=status>temp shield</c>.",
+                    cost = 0,
+                    description = $"On draw, gain {_rikaFluxAmountNone} <c=status>shield flow</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Shield
+                    art = StableSpr.cards_Flux
                 };
             }
-
             if (upgrade == Upgrade.B)
             {
                 return new CardData
                 {
                     cost = 1,
-                    description = $"On draw, <c=downside>-1 energy</c> but gain {_tempShieldAmountB} <c=status>temp shield</c> & {_shieldAmountB} <c=status>shield</c>.",
+                    description = $"On draw, <c=downside>-1 energy</c> but gain {_libraAmountB} <c=status>flux</c>.",
                     artTint = _artTintDefault,
-                    art = StableSpr.cards_Shield
+                    art = StableSpr.cards_Flux
                 };
-            }
+            }  
         }
         return default;
     }
-    
-    public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state)
-        => new HashSet<ICardTraitEntry> { ModEntry.Instance.RikasTrait };
-    
 };
