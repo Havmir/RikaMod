@@ -34,13 +34,19 @@ public class CardRotate : Artifact, IRegisterable
     {
         Combat combat2 = combat;
         ADrawCard b = new ADrawCard();
-        b.count = 2;
+        b.count = 1;
         combat2.QueueImmediate(b);
         
         Combat combat1 = combat;
         ADiscard a = new ADiscard();
-        a.count = 2;
+        a.count = 1;
         combat1.QueueImmediate(a);
+        
+        Combat combat0 = combat;
+        ADiscard z = new ADiscard();
+        z.count = 0;
+        z.timer = 1;
+        combat0.QueueImmediate(z);
         Pulse();
 
         if (_isplaytester)

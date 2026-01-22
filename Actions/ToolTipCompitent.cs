@@ -17,6 +17,9 @@ public class ToolTipCompitent : CardAction
     public static Spr RikaKiteingicon;
     public static Spr RikaEnergyIcon;
     public static Spr RikaFlightDrawIcon;
+    public static Spr RikaFluxIcon;
+    
+    private string _kiteingStatusName = ArtManager.KiteingDisplayName;
     
     public override List<Tooltip> GetTooltips(State s)
     {
@@ -65,7 +68,7 @@ public class ToolTipCompitent : CardAction
                     }
                 ];
             }
-            if (_stringString == "temp strafe")
+            if (_stringString == _kiteingStatusName)
             {
                 object[] objArray = new object[2]
                 {
@@ -125,10 +128,103 @@ public class ToolTipCompitent : CardAction
                     }
                 ];
             }
+            if (_stringString == "trashAutoShoot")
+            {
+                return [
+                    new TTCard
+                    {
+                        card = new TrashAutoShoot()
+                    },
+                ];
+            }
+            if (_stringString == "RikaFlux")
+            {
+                object[] objArray = new object[2]
+                {
+                    _stringInt, //$"{s.ship.Get(RikaFluxManager.RikaFlux.Status)}",
+                    null!
+                };
+        
+                var side = "ToolTipAStatusRikaFlux";
+                return
+                [
+                    new GlossaryTooltip($"ToolTipAStatusRikaFlux::{side}")
+                    {
+                        Icon = RikaFluxIcon,
+                        Title = ModEntry.Instance.Localizations.Localize(["status", "RikaFlux", "name"]),
+                        TitleColor = Colors.status,
+                        Description = string.Format(ModEntry.Instance.Localizations.Localize(["status", "RikaFlux", "desc"]), objArray)
+                    }
+                ];
+            }
         }
 
         if (IsWeird)
         {
+            if (WeirdCase == 4)
+            {
+                return [
+                    new TTCard
+                    {
+                        card = new BruiseCard{upgrade = Upgrade.B}
+                    },
+                    new TTCard
+                    {
+                        card = new Buckshot{upgrade = Upgrade.B}
+                    },
+                    new TTCard
+                    {
+                        card = new LightningBottle{upgrade = Upgrade.B}
+                    },
+                    new TTCard
+                    {
+                        card = new WaltzCard{upgrade = Upgrade.B}
+                    }
+                ];
+            }
+            if (WeirdCase == 3)
+            {
+                return [
+                    new TTCard
+                    {
+                        card = new BruiseCard{upgrade = Upgrade.A}
+                    },
+                    new TTCard
+                    {
+                        card = new Buckshot{upgrade = Upgrade.A}
+                    },
+                    new TTCard
+                    {
+                        card = new LightningBottle{upgrade = Upgrade.A}
+                    },
+                    new TTCard
+                    {
+                        card = new WaltzCard{upgrade = Upgrade.A}
+                    }
+                ];
+            }
+            if (WeirdCase == 2)
+            {
+                return [
+                    new TTCard
+                    {
+                        card = new BruiseCard()
+                    },
+                    new TTCard
+                    {
+                        card = new Buckshot()
+                    },
+                    new TTCard
+                    {
+                        card = new LightningBottle()
+                    },
+                    new TTCard
+                    {
+                        card = new WaltzCard()
+                    }
+                ];
+            }
+            
             if (WeirdCase == 1)
             {
                 List<Tooltip> tooltips = new List<Tooltip>();
@@ -138,7 +234,7 @@ public class ToolTipCompitent : CardAction
 
             if (WeirdCase == 0)
             {
-                Console.WriteLine($"[RikaMod] Error: when using ToolTipComputent, WeirdCase was never set to an approprite value. Value: {WeirdCase} | _stringString: {_stringString}");
+                Console.WriteLine($"[RikaMod] Error: when using ToolTipCompitent, WeirdCase was never set to an approprite value. Value: {WeirdCase} | _stringString: {_stringString}");
             }
         }
         
